@@ -565,9 +565,9 @@
     </div>
 
     <script>
-        // Configuração da API do Google Apps Script
+        // Configuração da API do Google Apps Script - SUA NOVA URL
         const API_URL = "https://script.google.com/macros/s/AKfycbzJUXUGoTKtrfZCQf6iayyQgjBsZR7nOUJ9cnJBnKtIF2yUb0ZWqJXJzxfFkzNOkAtjtQ/exec";
-        
+
         // Variáveis globais
         let trips = [];
         let drivers = [];
@@ -632,7 +632,7 @@
             }
         }
         
-        // Função para adicionar uma nova viagem à planilha
+        // Função para adicionar uma nova viagem à planilha - CORRIGIDA
         async function addTripToSheets(newTrip) {
             try {
                 loadingElement.style.display = 'flex';
@@ -642,33 +642,53 @@
                 const formattedTrip = {
                     driver: newTrip.driver,
                     vehicle: newTrip.vehicle,
-                    date: formatDateForSheets(newTrip.date),
+                    date: newTrip.date, // Já deve estar no formato YYYY-MM-DD
                     kmStart: parseInt(newTrip.kmStart, 10),
                     kmEnd: parseInt(newTrip.kmEnd, 10),
                     activities: newTrip.activities
                 };
+                
+                console.log("📤 Dados sendo enviados:", formattedTrip);
+                
+                // Usar FormData para melhor compatibilidade
+                const formData = new URLSearchParams();
+                formData.append('action', 'addTrip');
+                formData.append('driver', formattedTrip.driver);
+                formData.append('vehicle', formattedTrip.vehicle);
+                formData.append('date', formattedTrip.date);
+                formData.append('kmStart', formattedTrip.kmStart);
+                formData.append('kmEnd', formattedTrip.kmEnd);
+                formData.append('activities', formattedTrip.activities);
+                
+                console.log("🔗 Enviando para:", API_URL);
                 
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
                     },
-                    body: `action=addTrip&data=${encodeURIComponent(JSON.stringify(formattedTrip))}`
+                    body: formData.toString()
                 });
                 
+                console.log("📥 Resposta recebida, status:", response.status);
+                
                 if (!response.ok) {
-                    throw new Error(`Erro HTTP: ${response.status}`);
+                    throw new Error(`Erro HTTP: ${response.status} - ${response.statusText}`);
                 }
                 
                 const result = await response.json();
+                console.log("✅ Resposta do servidor:", result);
+                
                 if (result.status === 'success') {
                     await loadDataFromSheets();
                     return true;
+                } else if (result.error) {
+                    throw new Error(result.error);
                 } else {
-                    throw new Error(result.message || "Erro desconhecido ao salvar");
+                    throw new Error("Erro desconhecido ao salvar: " + JSON.stringify(result));
                 }
             } catch (error) {
-                console.error("Erro ao salvar dados:", error);
+                console.error("❌ Erro detalhado ao salvar dados:", error);
                 alert("Erro ao salvar a viagem: " + error.message);
                 loadingElement.style.display = 'none';
                 return false;
@@ -707,15 +727,6 @@
                 alert("Erro ao excluir o registro: " + error.message);
                 loadingElement.style.display = 'none';
             }
-        }
-        
-        // Função para formatar data para o formato do Google Sheets (YYYY-MM-DD)
-        function formatDateForSheets(dateString) {
-            const date = new Date(dateString);
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
         }
         
         // Função para encontrar o último Km de Chegada
@@ -1009,8 +1020,21 @@
                 alert('Ajuda: Preencha o formulário para registrar uma nova viagem. A tabela ao lado mostrará o histórico. Para excluir um registro, clique no botão de lixeira correspondente.');
             });
         });
+
+        // Função de teste temporária - execute no console do navegador
+        window.testAPI = async function() {
+            console.log("🧪 Testando conexão com a API...");
+            
+            try {
+                const response = await fetch(API_URL + "?action=getTrips");
+                const data = await response.json();
+                console.log("📊 Dados recebidos:", data);
+                alert("Conexão OK! Viagens encontradas: " + (data.length || 0));
+            } catch (error) {
+                console.error("❌ Erro no teste:", error);
+                alert("Erro na conexão: " + error.message);
+            }
+        }
     </script>
 </body>
 </html>
-
-
