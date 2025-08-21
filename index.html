@@ -35,12 +35,13 @@
             flex-direction: column;
             min-height: 100vh;
             font-size: 16px; /* Base font size for better readability on mobile */
+            overflow-x: hidden; /* Prevent horizontal scroll on body */
         }
 
         .container {
             max-width: 100%;
             margin: 0 auto;
-            padding: 15px;
+            padding: 10px;
             width: 100%;
             flex-grow: 1;
         }
@@ -48,27 +49,27 @@
         .header {
             background-color: var(--primary-color);
             color: #fff;
-            padding: 15px;
+            padding: 10px;
             text-align: center;
             border-bottom-left-radius: 10px;
             border-bottom-right-radius: 10px;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         .header h1 {
-            font-size: 1.8rem; /* Slightly smaller for mobile */
-            margin-bottom: 8px;
+            font-size: 1.6rem;
+            margin-bottom: 5px;
             font-weight: 700;
         }
 
         .header p {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             opacity: 0.8;
         }
 
         .header-buttons {
-            margin-top: 12px;
+            margin-top: 10px;
             display: flex;
             justify-content: center;
             gap: 10px;
@@ -79,13 +80,13 @@
             background-color: var(--accent-color);
             color: #fff;
             border: none;
-            padding: 12px 18px; /* Increased padding for touch */
+            padding: 10px 16px;
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.2s ease;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: 600;
-            min-width: 120px; /* Ensure buttons are touch-friendly */
+            min-width: 110px;
         }
 
         .header-btn:hover {
@@ -94,7 +95,7 @@
         }
 
         .header-btn i {
-            margin-right: 8px;
+            margin-right: 6px;
         }
 
         /* Loading state */
@@ -109,12 +110,12 @@
 
         .loading-container .spinner {
             border: 4px solid rgba(0, 0, 0, 0.1);
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             border-left-color: var(--accent-color);
             animation: spin 1s ease infinite;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
 
         @keyframes spin {
@@ -125,15 +126,15 @@
         /* Vehicle cards */
         .vehicle-km-cards {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
         }
 
         .vehicle-card {
             background-color: var(--card-background);
             border-radius: 10px;
-            padding: 15px;
+            padding: 10px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
             text-align: center;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -155,32 +156,32 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 12px;
-            gap: 8px;
+            margin-bottom: 10px;
+            gap: 6px;
         }
 
         .vehicle-card-header h3 {
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             font-weight: 600;
         }
 
         .vehicle-card-header i {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
         }
 
         .ford-color { color: var(--ford-blue); }
         .fiat-color { color: var(--fiat-red); }
 
         .vehicle-km {
-            font-size: 2rem; /* Slightly smaller for mobile */
+            font-size: 1.8rem;
             font-weight: 700;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
 
         .vehicle-stats {
             display: flex;
             justify-content: center;
-            gap: 15px;
+            gap: 10px;
             color: #6c757d;
         }
 
@@ -191,66 +192,66 @@
         }
 
         .stat-item-value {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 600;
         }
 
         .stat-item-label {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
         }
 
         /* Main Content */
         .content {
             display: flex;
-            gap: 15px;
+            gap: 10px;
             flex-wrap: wrap;
-            margin-top: 15px;
+            margin-top: 10px;
         }
 
         .form-section, .data-section {
             background-color: var(--card-background);
             border-radius: 10px;
-            padding: 20px;
+            padding: 15px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
             flex: 1;
-            min-width: 100%; /* Full width on mobile */
+            min-width: 100%;
         }
 
         .section-title {
-            font-size: 1.6rem;
-            margin-bottom: 15px;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
             color: var(--primary-color);
             font-weight: 600;
             border-bottom: 2px solid var(--accent-color);
-            padding-bottom: 8px;
+            padding-bottom: 5px;
         }
 
         .section-title i {
-            margin-right: 8px;
+            margin-right: 6px;
             color: var(--accent-color);
         }
 
         /* Form styling */
         .form-group {
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
 
         .form-group input, .form-group select, .form-group textarea {
             width: 100%;
-            padding: 10px;
+            padding: 8px;
             border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 1rem;
+            border-radius: 6px;
+            font-size: 0.95rem;
             font-family: 'Poppins', sans-serif;
             transition: border-color 0.3s ease;
-            line-height: 1.5; /* Improved readability */
+            line-height: 1.4;
         }
 
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
@@ -268,9 +269,9 @@
             background-color: var(--card-background);
             border: 1px solid #ddd;
             border-top: none;
-            border-radius: 0 0 8px 8px;
+            border-radius: 0 0 6px 6px;
             width: 100%;
-            max-height: 150px;
+            max-height: 120px;
             overflow-y: auto;
             z-index: 100;
             display: none;
@@ -278,10 +279,10 @@
         }
 
         .datalist-item {
-            padding: 10px 12px;
+            padding: 8px 10px;
             cursor: pointer;
             transition: background-color 0.2s ease;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
 
         .datalist-item:hover {
@@ -292,14 +293,14 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-top: 10px;
+            margin-top: 8px;
             background-color: #e8f5e9;
-            padding: 10px;
-            border-radius: 8px;
+            padding: 8px;
+            border-radius: 6px;
         }
 
         .suggestion p {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: #2e7d32;
         }
 
@@ -307,11 +308,11 @@
             background-color: #4CAF50;
             color: white;
             border: none;
-            padding: 8px 14px; /* Larger for touch */
-            border-radius: 5px;
+            padding: 6px 10px;
+            border-radius: 4px;
             cursor: pointer;
             transition: background-color 0.2s ease;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
 
         .suggestion-btn:hover {
@@ -320,16 +321,16 @@
 
         .submit-btn {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             background-color: var(--accent-color);
             color: #fff;
             border: none;
-            border-radius: 8px;
-            font-size: 1rem;
+            border-radius: 6px;
+            font-size: 0.95rem;
             font-weight: 600;
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.2s ease;
-            margin-top: 10px;
+            margin-top: 8px;
         }
 
         .submit-btn:hover {
@@ -338,46 +339,49 @@
         }
 
         .submit-btn i {
-            margin-right: 8px;
+            margin-right: 6px;
         }
 
         .feature-highlight {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             background-color: #f2f4f6;
-            padding: 12px;
-            border-radius: 10px;
-            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 12px;
         }
 
         .feature-highlight i {
-            font-size: 2rem;
+            font-size: 1.8rem;
             color: var(--accent-color);
         }
 
         .feature-highlight strong {
             color: var(--primary-color);
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
 
         /* Table styling */
         .table-container {
-            overflow-x: auto;
-            margin-top: 15px;
+            overflow-x: hidden; /* Prevent horizontal scroll */
+            margin-top: 10px;
         }
 
         #tripsTable {
             width: 100%;
-            min-width: 600px;
             border-collapse: collapse;
             font-size: 0.85rem;
+            table-layout: fixed;
         }
 
         #tripsTable th, #tripsTable td {
-            padding: 10px 12px;
+            padding: 8px 10px;
             text-align: left;
             border-bottom: 1px solid #e0e0e0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         #tripsTable thead th {
@@ -401,11 +405,11 @@
             background-color: #e74c3c;
             color: #fff;
             border: none;
-            padding: 8px 12px;
-            border-radius: 5px;
+            padding: 6px 10px;
+            border-radius: 4px;
             cursor: pointer;
             transition: background-color 0.3s ease;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
 
         .delete-btn:hover {
@@ -414,17 +418,17 @@
 
         .no-data {
             text-align: center;
-            padding: 40px 15px;
+            padding: 30px 10px;
             color: #888;
         }
 
         .no-data i {
-            font-size: 2.5rem;
-            margin-bottom: 12px;
+            font-size: 2rem;
+            margin-bottom: 10px;
         }
 
         .no-data h3 {
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             margin-bottom: 5px;
         }
 
@@ -433,99 +437,129 @@
             background-color: var(--primary-color);
             color: #fff;
             text-align: center;
-            padding: 12px;
-            margin-top: 15px;
+            padding: 10px;
+            margin-top: 10px;
             border-top-left-radius: 10px;
             border-top-right-radius: 10px;
         }
 
         .footer p {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             opacity: 0.7;
         }
 
-        /* Responsive design for mobile (1080px width) */
+        /* Responsive design for smartphone (assuming width up to 1080px) */
         @media (max-width: 1080px) {
             body {
-                font-size: 15px; /* Slightly smaller base font for mobile */
+                font-size: 15px;
             }
 
             .container {
-                padding: 10px;
+                padding: 5px;
             }
 
             .header h1 {
-                font-size: 1.6rem;
+                font-size: 1.5rem;
             }
 
             .header p {
-                font-size: 0.85rem;
-            }
-
-            .header-btn {
-                padding: 10px 16px;
-                font-size: 0.9rem;
-                min-width: 110px;
+                font-size: 0.8rem;
             }
 
             .vehicle-km-cards {
-                grid-template-columns: 1fr; /* Single column for mobile */
-                gap: 12px;
+                grid-template-columns: 1fr;
+                gap: 10px;
             }
 
             .vehicle-card {
-                padding: 12px;
+                padding: 10px;
             }
 
             .vehicle-card-header h3 {
-                font-size: 1.3rem;
+                font-size: 1.2rem;
             }
 
             .vehicle-km {
-                font-size: 1.8rem;
+                font-size: 1.6rem;
             }
 
             .content {
                 flex-direction: column;
-                gap: 12px;
+                gap: 10px;
             }
 
             .form-section, .data-section {
-                padding: 15px;
+                padding: 12px;
                 min-width: 100%;
             }
 
             .section-title {
-                font-size: 1.5rem;
+                font-size: 1.4rem;
             }
 
             .form-group input, .form-group select, .form-group textarea {
-                padding: 10px;
-                font-size: 0.95rem;
+                padding: 8px;
+                font-size: 0.9rem;
             }
 
             .submit-btn {
-                padding: 12px;
-                font-size: 0.95rem;
+                padding: 10px;
+                font-size: 0.9rem;
             }
 
+            /* Responsive table as cards */
             #tripsTable {
+                border: none;
                 font-size: 0.8rem;
             }
 
-            #tripsTable th, #tripsTable td {
-                padding: 8px 10px;
+            #tripsTable thead {
+                display: none;
+            }
+
+            #tripsTable tbody tr {
+                display: block;
+                margin-bottom: 10px;
+                border: 1px solid #e0e0e0;
+                border-radius: 8px;
+                padding: 10px;
+                background-color: #fff;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            }
+
+            #tripsTable tbody td {
+                display: block;
+                text-align: right;
+                position: relative;
+                padding: 5px 0 5px 50%;
+                border: none;
+                white-space: normal;
+            }
+
+            #tripsTable tbody td:before {
+                content: attr(data-label);
+                position: absolute;
+                left: 10px;
+                top: 5px;
+                font-weight: 600;
+                text-align: left;
+                color: var(--secondary-color);
+            }
+
+            #tripsTable tbody td:last-child {
+                text-align: center;
+                padding: 10px 0 0;
             }
 
             .delete-btn {
                 padding: 6px 10px;
-                font-size: 0.85rem;
+                font-size: 0.8rem;
+                width: auto;
             }
         }
     </style>
 </head>
 <body>
-    <!-- The HTML and JavaScript remain unchanged -->
     <div class="container">
         <header class="header">
             <h1>Controle de Quilometragem</h1>
@@ -637,7 +671,6 @@
     </div>
 
     <script>
-        // JavaScript remains unchanged
         // Configuração da API do Google Apps Script - SUA NOVA URL
         const API_URL = "https://script.google.com/macros/s/AKfycbwcHR4-F02ctkgC4gOsRQI01enVDm0HwghSq5yB7gkOqZg1AZVrEP7FFBTeJ8wECExqcA/exec";
 
@@ -839,13 +872,13 @@
                 const distance = trip.KmChegada - trip.KmSaída;
                 
                 row.innerHTML = `
-                    <td>${trip.Motorista}</td>
-                    <td>${trip.Veículo}</td>
-                    <td>${formatDate(trip.Data)}</td>
-                    <td>${trip.KmSaída.toLocaleString()}</td>
-                    <td>${trip.KmChegada.toLocaleString()}</td>
-                    <td>${distance.toLocaleString()} km</td>
-                    <td><button class="delete-btn" onclick="deleteTripFromSheets(${rowIndex})"><i class="fas fa-trash-alt"></i></button></td>
+                    <td data-label="Motorista">${trip.Motorista}</td>
+                    <td data-label="Veículo">${trip.Veículo}</td>
+                    <td data-label="Data">${formatDate(trip.Data)}</td>
+                    <td data-label="Km Saída">${trip.KmSaída.toLocaleString()}</td>
+                    <td data-label="Km Chegada">${trip.KmChegada.toLocaleString()}</td>
+                    <td data-label="Distância">${distance.toLocaleString()} km</td>
+                    <td data-label="Ações"><button class="delete-btn" onclick="deleteTripFromSheets(${rowIndex})"><i class="fas fa-trash-alt"></i></button></td>
                 `;
             });
         }
