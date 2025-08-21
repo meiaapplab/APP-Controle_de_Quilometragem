@@ -396,6 +396,26 @@
             border-bottom: none;
         }
 
+        .delete-btn {
+            background-color: #e74c3c;
+            color: #fff;
+            border: none;
+            padding: 4px 6px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 0.85rem;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .delete-btn:hover {
+            background-color: #c0392b;
+        }
+
         .no-data {
             text-align: center;
             padding: 20px 10px;
@@ -512,6 +532,11 @@
                 text-align: left;
                 font-size: 0.75rem;
             }
+
+            #tripsTable tbody td:last-child {
+                text-align: right;
+                padding-top: 4px;
+            }
         }
     </style>
 </head>
@@ -607,6 +632,7 @@
                                 <th>Km Chegada</th>
                                 <th>Distância</th>
                                 <th>Atividades</th>
+                                <th></th> <!-- Coluna para o ícone de exclusão -->
                             </tr>
                         </thead>
                         <tbody id="tripsBody">
@@ -737,6 +763,39 @@
             }
         }
         
+        async function deleteTripFromSheets(index) {
+            if (!confirm("Tem certeza que deseja excluir este registro?")) {
+                return;
+            }
+            try {
+                loadingElement.style.display = 'flex';
+                syncStatus.textContent = "Excluindo registro...";
+                
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `action=deleteTrip&index=${index}`
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Erro HTTP: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                if (result.status === 'success') {
+                    await loadDataFromSheets();
+                } else {
+                    throw new Error(result.message);
+                }
+            } catch (error) {
+                console.error("Erro ao excluir dados:", error);
+                alert("Erro ao excluir o registro: " + error.message);
+                loadingElement.style.display = 'none';
+            }
+        }
+        
         function findLastKmEnd(vehicle, date) {
             const vehicleTrips = trips.filter(trip => trip.Veículo === vehicle);
             
@@ -769,7 +828,8 @@
                 const distance = trip.KmChegada - trip.KmSaída;
                 
                 row.innerHTML = `
-                    <td colspan="7">${trip.Motorista} | ${trip.Veículo} | ${formatDate(trip.Data)} | Saída: ${trip.KmSaída.toLocaleString()} - Chegada: ${trip.KmChegada.toLocaleString()} | Percorrido: ${distance.toLocaleString()} km | Atividades: ${trip.Atividades}</td>
+                    <td colspan="6">${trip.Motorista} | ${trip.Veículo} | ${formatDate(trip.Data)} | Saída: ${trip.KmSaída.toLocaleString()} - Chegada: ${trip.KmChegada.toLocaleString()} | Percorrido: ${distance.toLocaleString()} km | Atividades: ${trip.Atividades}</td>
+                    <td><button class="delete-btn" onclick="deleteTripFromSheets(${rowIndex})"><i class="fas fa-trash-alt"></i></button></td>
                 `;
             });
         }
@@ -1000,7 +1060,7 @@
             });
             
             document.getElementById('helpBtn').addEventListener('click', () => {
-                alert('Ajuda: Preencha o formulário para registrar uma nova viagem. A tabela ao lado mostrará o histórico com atividades realizadas.');
+                alert('Ajuda: Preencha o formulário para registrar uma nova viagem. A tabela ao lado mostrará o histórico com atividades realizadas. Clique no ícone de lixeira para excluir um registro.');
             });
         });
 
