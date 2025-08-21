@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Controle de Quilometragem</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     
@@ -34,12 +34,13 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            font-size: 16px; /* Base font size for better readability on mobile */
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 100%;
             margin: 0 auto;
-            padding: 20px;
+            padding: 15px;
             width: 100%;
             flex-grow: 1;
         }
@@ -47,30 +48,30 @@
         .header {
             background-color: var(--primary-color);
             color: #fff;
-            padding: 20px;
+            padding: 15px;
             text-align: center;
             border-bottom-left-radius: 10px;
             border-bottom-right-radius: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         .header h1 {
-            font-size: 2.2rem;
-            margin-bottom: 10px;
+            font-size: 1.8rem; /* Slightly smaller for mobile */
+            margin-bottom: 8px;
             font-weight: 700;
         }
 
         .header p {
-            font-size: 1rem;
+            font-size: 0.9rem;
             opacity: 0.8;
         }
 
         .header-buttons {
-            margin-top: 15px;
+            margin-top: 12px;
             display: flex;
             justify-content: center;
-            gap: 15px;
+            gap: 10px;
             flex-wrap: wrap;
         }
 
@@ -78,12 +79,13 @@
             background-color: var(--accent-color);
             color: #fff;
             border: none;
-            padding: 10px 20px;
+            padding: 12px 18px; /* Increased padding for touch */
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.2s ease;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             font-weight: 600;
+            min-width: 120px; /* Ensure buttons are touch-friendly */
         }
 
         .header-btn:hover {
@@ -124,14 +126,14 @@
         .vehicle-km-cards {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            gap: 15px;
+            margin-bottom: 20px;
         }
 
         .vehicle-card {
             background-color: var(--card-background);
             border-radius: 10px;
-            padding: 20px;
+            padding: 15px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
             text-align: center;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -153,32 +155,32 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 15px;
-            gap: 10px;
+            margin-bottom: 12px;
+            gap: 8px;
         }
 
         .vehicle-card-header h3 {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: 600;
         }
 
         .vehicle-card-header i {
-            font-size: 2rem;
+            font-size: 1.8rem;
         }
 
         .ford-color { color: var(--ford-blue); }
         .fiat-color { color: var(--fiat-red); }
 
         .vehicle-km {
-            font-size: 2.5rem;
+            font-size: 2rem; /* Slightly smaller for mobile */
             font-weight: 700;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
         .vehicle-stats {
             display: flex;
             justify-content: center;
-            gap: 20px;
+            gap: 15px;
             color: #6c757d;
         }
 
@@ -189,71 +191,66 @@
         }
 
         .stat-item-value {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: 600;
         }
 
         .stat-item-label {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
         }
 
         /* Main Content */
         .content {
             display: flex;
-            gap: 20px;
+            gap: 15px;
             flex-wrap: wrap;
-            margin-top: 20px;
+            margin-top: 15px;
         }
 
         .form-section, .data-section {
             background-color: var(--card-background);
             border-radius: 10px;
-            padding: 25px;
+            padding: 20px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
             flex: 1;
-            min-width: 300px;
-        }
-
-        .form-section {
-            flex: 1 1 100%;
-        }
-        .data-section {
-            flex-grow: 1;
+            min-width: 100%; /* Full width on mobile */
         }
 
         .section-title {
-            font-size: 1.8rem;
-            margin-bottom: 20px;
+            font-size: 1.6rem;
+            margin-bottom: 15px;
             color: var(--primary-color);
             font-weight: 600;
             border-bottom: 2px solid var(--accent-color);
-            padding-bottom: 10px;
+            padding-bottom: 8px;
         }
 
         .section-title i {
-            margin-right: 10px;
+            margin-right: 8px;
             color: var(--accent-color);
         }
 
         /* Form styling */
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
         .form-group label {
             display: block;
             margin-bottom: 5px;
             font-weight: 600;
+            font-size: 0.95rem;
         }
 
         .form-group input, .form-group select, .form-group textarea {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             border: 1px solid #ddd;
             border-radius: 8px;
             font-size: 1rem;
             font-family: 'Poppins', sans-serif;
             transition: border-color 0.3s ease;
+            line-height: 1.5; /* Improved readability */
         }
 
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
@@ -284,6 +281,7 @@
             padding: 10px 12px;
             cursor: pointer;
             transition: background-color 0.2s ease;
+            font-size: 0.95rem;
         }
 
         .datalist-item:hover {
@@ -309,10 +307,11 @@
             background-color: #4CAF50;
             color: white;
             border: none;
-            padding: 6px 12px;
+            padding: 8px 14px; /* Larger for touch */
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.2s ease;
+            font-size: 0.9rem;
         }
 
         .suggestion-btn:hover {
@@ -321,12 +320,12 @@
 
         .submit-btn {
             width: 100%;
-            padding: 15px;
+            padding: 12px;
             background-color: var(--accent-color);
             color: #fff;
             border: none;
             border-radius: 8px;
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.2s ease;
@@ -339,43 +338,44 @@
         }
 
         .submit-btn i {
-            margin-right: 10px;
+            margin-right: 8px;
         }
 
         .feature-highlight {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
             background-color: #f2f4f6;
-            padding: 15px;
+            padding: 12px;
             border-radius: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .feature-highlight i {
-            font-size: 2.5rem;
+            font-size: 2rem;
             color: var(--accent-color);
         }
 
         .feature-highlight strong {
             color: var(--primary-color);
+            font-size: 0.95rem;
         }
 
         /* Table styling */
         .table-container {
             overflow-x: auto;
-            margin-top: 20px;
+            margin-top: 15px;
         }
 
         #tripsTable {
             width: 100%;
             min-width: 600px;
             border-collapse: collapse;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
 
         #tripsTable th, #tripsTable td {
-            padding: 12px 15px;
+            padding: 10px 12px;
             text-align: left;
             border-bottom: 1px solid #e0e0e0;
         }
@@ -405,6 +405,7 @@
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s ease;
+            font-size: 0.9rem;
         }
 
         .delete-btn:hover {
@@ -413,17 +414,17 @@
 
         .no-data {
             text-align: center;
-            padding: 50px 20px;
+            padding: 40px 15px;
             color: #888;
         }
 
         .no-data i {
-            font-size: 3rem;
-            margin-bottom: 15px;
+            font-size: 2.5rem;
+            margin-bottom: 12px;
         }
 
         .no-data h3 {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             margin-bottom: 5px;
         }
 
@@ -432,26 +433,99 @@
             background-color: var(--primary-color);
             color: #fff;
             text-align: center;
-            padding: 15px;
-            margin-top: 20px;
+            padding: 12px;
+            margin-top: 15px;
             border-top-left-radius: 10px;
             border-top-right-radius: 10px;
         }
 
         .footer p {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             opacity: 0.7;
         }
 
-        /* Responsive design */
-        @media (max-width: 900px) {
+        /* Responsive design for mobile (1080px width) */
+        @media (max-width: 1080px) {
+            body {
+                font-size: 15px; /* Slightly smaller base font for mobile */
+            }
+
+            .container {
+                padding: 10px;
+            }
+
+            .header h1 {
+                font-size: 1.6rem;
+            }
+
+            .header p {
+                font-size: 0.85rem;
+            }
+
+            .header-btn {
+                padding: 10px 16px;
+                font-size: 0.9rem;
+                min-width: 110px;
+            }
+
+            .vehicle-km-cards {
+                grid-template-columns: 1fr; /* Single column for mobile */
+                gap: 12px;
+            }
+
+            .vehicle-card {
+                padding: 12px;
+            }
+
+            .vehicle-card-header h3 {
+                font-size: 1.3rem;
+            }
+
+            .vehicle-km {
+                font-size: 1.8rem;
+            }
+
             .content {
                 flex-direction: column;
+                gap: 12px;
+            }
+
+            .form-section, .data-section {
+                padding: 15px;
+                min-width: 100%;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+
+            .form-group input, .form-group select, .form-group textarea {
+                padding: 10px;
+                font-size: 0.95rem;
+            }
+
+            .submit-btn {
+                padding: 12px;
+                font-size: 0.95rem;
+            }
+
+            #tripsTable {
+                font-size: 0.8rem;
+            }
+
+            #tripsTable th, #tripsTable td {
+                padding: 8px 10px;
+            }
+
+            .delete-btn {
+                padding: 6px 10px;
+                font-size: 0.85rem;
             }
         }
     </style>
 </head>
 <body>
+    <!-- The HTML and JavaScript remain unchanged -->
     <div class="container">
         <header class="header">
             <h1>Controle de Quilometragem</h1>
@@ -563,6 +637,7 @@
     </div>
 
     <script>
+        // JavaScript remains unchanged
         // Configuração da API do Google Apps Script - SUA NOVA URL
         const API_URL = "https://script.google.com/macros/s/AKfycbwcHR4-F02ctkgC4gOsRQI01enVDm0HwghSq5yB7gkOqZg1AZVrEP7FFBTeJ8wECExqcA/exec";
 
@@ -899,35 +974,35 @@
         }
         
         function formatDate(dateString) {
-    if (!dateString) return 'Data inválida';
-    
-    try {
-        // Remove qualquer informação de hora
-        const dateOnly = dateString.toString().split(' ')[0];
-        const parts = dateOnly.split('-');
-        
-        // Formato YYYY-MM-DD
-        if (parts.length === 3) {
-            const [year, month, day] = parts;
-            return `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${year}`;
-        }
-        
-        // Tenta converter se estiver em outro formato
-        const date = new Date(dateOnly);
-        if (!isNaN(date.getTime())) {
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const year = date.getFullYear();
-            return `${day}/${month}/${year}`;
-        }
-        
-        return dateOnly; // Retorna sem a parte da hora
-        
-    } catch (e) {
-        console.error("Erro ao formatar data:", dateString, e);
-        return dateString;
-    }
-}    
+            if (!dateString) return 'Data inválida';
+            
+            try {
+                // Remove qualquer informação de hora
+                const dateOnly = dateString.toString().split(' ')[0];
+                const parts = dateOnly.split('-');
+                
+                // Formato YYYY-MM-DD
+                if (parts.length === 3) {
+                    const [year, month, day] = parts;
+                    return `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${year}`;
+                }
+                
+                // Tenta converter se estiver em outro formato
+                const date = new Date(dateOnly);
+                if (!isNaN(date.getTime())) {
+                    const day = String(date.getDate()).padStart(2, '0');
+                    const month = String(date.getMonth() + 1).padStart(2, '0');
+                    const year = date.getFullYear();
+                    return `${day}/${month}/${year}`;
+                }
+                
+                return dateOnly; // Retorna sem a parte da hora
+                
+            } catch (e) {
+                console.error("Erro ao formatar data:", dateString, e);
+                return dateString;
+            }
+        }    
         // Event Listeners
         document.addEventListener('DOMContentLoaded', () => {
             // Definir data atual como padrão
@@ -1041,10 +1116,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
