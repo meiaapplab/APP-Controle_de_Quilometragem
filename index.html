@@ -34,8 +34,8 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            font-size: 16px; /* Base font size for better readability on mobile */
-            overflow-x: hidden; /* Prevent horizontal scroll on body */
+            font-size: 16px;
+            overflow-x: hidden;
         }
 
         .container {
@@ -98,7 +98,6 @@
             margin-right: 6px;
         }
 
-        /* Loading state */
         .loading-container {
             display: flex;
             flex-direction: column;
@@ -123,7 +122,6 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Vehicle cards */
         .vehicle-km-cards {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -200,7 +198,6 @@
             font-size: 0.7rem;
         }
 
-        /* Main Content */
         .content {
             display: flex;
             gap: 10px;
@@ -231,7 +228,6 @@
             color: var(--accent-color);
         }
 
-        /* Form styling */
         .form-group {
             margin-bottom: 10px;
         }
@@ -362,9 +358,8 @@
             font-size: 0.9rem;
         }
 
-        /* Table styling */
         .table-container {
-            overflow-x: hidden; /* Prevent horizontal scroll */
+            overflow-x: hidden;
             margin-top: 10px;
         }
 
@@ -432,7 +427,6 @@
             margin-bottom: 5px;
         }
 
-        /* Footer */
         .footer {
             background-color: var(--primary-color);
             color: #fff;
@@ -448,7 +442,6 @@
             opacity: 0.7;
         }
 
-        /* Responsive design for smartphone (assuming width up to 1080px) */
         @media (max-width: 1080px) {
             body {
                 font-size: 15px;
@@ -507,7 +500,6 @@
                 font-size: 0.9rem;
             }
 
-            /* Responsive table as cards */
             #tripsTable {
                 border: none;
                 font-size: 0.8rem;
@@ -544,6 +536,12 @@
                 font-weight: 600;
                 text-align: left;
                 color: var(--secondary-color);
+            }
+
+            #tripsTable tbody td[data-label="Atividades"] {
+                white-space: normal; /* Allow text wrapping for activities */
+                text-align: left;
+                padding: 5px 10px;
             }
 
             #tripsTable tbody td:last-child {
@@ -650,6 +648,7 @@
                                 <th>Km Saída</th>
                                 <th>Km Chegada</th>
                                 <th>Distância</th>
+                                <th>Atividades</th> <!-- Nova coluna -->
                                 <th>Ações</th>
                             </tr>
                         </thead>
@@ -666,27 +665,23 @@
         </div>
         
         <footer class="footer">
-            <p>Sistema de Controle de Quilometragem e Atividades&copy; 2025 |  MEIA APP  | Dados armazenados na núvem</p>
+            <p>Sistema de Controle de Quilometragem e Atividades&copy; 2025 | MEIA APP | Dados armazenados na núvem</p>
         </footer>
     </div>
 
     <script>
-        // Configuração da API do Google Apps Script - SUA NOVA URL
         const API_URL = "https://script.google.com/macros/s/AKfycbwcHR4-F02ctkgC4gOsRQI01enVDm0HwghSq5yB7gkOqZg1AZVrEP7FFBTeJ8wECExqcA/exec";
 
-        // Variáveis globais
         let trips = [];
         let drivers = [];
         let activities = [];
         let vehicles = ['FORD RANGER', 'FIAT STRADA'];
         
-        // Elementos da interface
         const syncStatus = document.getElementById('syncStatus');
         const loadingElement = document.getElementById('loading');
         const vehicleKmContainer = document.getElementById('vehicleKmContainer');
         const appContent = document.getElementById('appContent');
         
-        // Função para carregar dados do Google Sheets
         async function loadDataFromSheets() {
             try {
                 syncStatus.textContent = "Carregando dados...";
@@ -698,23 +693,19 @@
                 
                 const data = await response.json();
                 
-                // Verifica se a resposta contém um erro
                 if (data.error) {
                     throw new Error(data.error);
                 }
                 
                 trips = data;
                 
-                // Atualizar listas de sugestões
                 drivers = [...new Set(trips.map(trip => trip.Motorista))];
                 activities = [...new Set(trips.map(trip => trip.Atividades))];
                 
-                // Atualizar veículos
                 const vehicleSet = new Set(vehicles);
                 trips.forEach(trip => vehicleSet.add(trip.Veículo));
                 vehicles = Array.from(vehicleSet);
                 
-                // Atualizar interface
                 updateDriverSuggestions();
                 updateVehicleSelect();
                 renderTrips();
@@ -723,13 +714,11 @@
                 loadingElement.style.display = 'none';
                 appContent.style.display = 'flex';
                 vehicleKmContainer.style.display = 'grid';
-
             } catch (error) {
                 console.error("Erro ao carregar dados:", error);
                 syncStatus.textContent = "Erro ao carregar dados: " + error.message;
                 syncStatus.style.color = '#e74c3c';
                 
-                // Mostrar conteúdo mesmo com erro para não travar a aplicação
                 setTimeout(() => {
                     loadingElement.style.display = 'none';
                     appContent.style.display = 'flex';
@@ -738,25 +727,20 @@
             }
         }
         
-        // Função para adicionar uma nova viagem à planilha - CORRIGIDA
         async function addTripToSheets(newTrip) {
             try {
                 loadingElement.style.display = 'flex';
                 syncStatus.textContent = "Salvando viagem...";
                 
-                // Formatar dados para o formato esperado pelo Google Sheets
                 const formattedTrip = {
                     driver: newTrip.driver,
                     vehicle: newTrip.vehicle,
-                    date: newTrip.date, // Já deve estar no formato YYYY-MM-DD
+                    date: newTrip.date,
                     kmStart: parseInt(newTrip.kmStart, 10),
                     kmEnd: parseInt(newTrip.kmEnd, 10),
                     activities: newTrip.activities
                 };
                 
-                console.log("📤 Dados sendo enviados:", formattedTrip);
-                
-                // Usar FormData para melhor compatibilidade
                 const formData = new URLSearchParams();
                 formData.append('action', 'addTrip');
                 formData.append('driver', formattedTrip.driver);
@@ -766,8 +750,6 @@
                 formData.append('kmEnd', formattedTrip.kmEnd);
                 formData.append('activities', formattedTrip.activities);
                 
-                console.log("🔗 Enviando para:", API_URL);
-                
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: {
@@ -776,14 +758,11 @@
                     body: formData.toString()
                 });
                 
-                console.log("📥 Resposta recebida, status:", response.status);
-                
                 if (!response.ok) {
                     throw new Error(`Erro HTTP: ${response.status} - ${response.statusText}`);
                 }
                 
                 const result = await response.json();
-                console.log("✅ Resposta do servidor:", result);
                 
                 if (result.status === 'success') {
                     await loadDataFromSheets();
@@ -794,14 +773,13 @@
                     throw new Error("Erro desconhecido ao salvar: " + JSON.stringify(result));
                 }
             } catch (error) {
-                console.error("❌ Erro detalhado ao salvar dados:", error);
+                console.error("Erro detalhado ao salvar dados:", error);
                 alert("Erro ao salvar a viagem: " + error.message);
                 loadingElement.style.display = 'none';
                 return false;
             }
         }
         
-        // Função para excluir uma viagem da planilha
         async function deleteTripFromSheets(index) {
             if (!confirm("Tem certeza que deseja excluir este registro?")) {
                 return;
@@ -835,14 +813,11 @@
             }
         }
         
-        // Função para encontrar o último Km de Chegada
         function findLastKmEnd(vehicle, date) {
-            // Filtra viagens do veículo selecionado
             const vehicleTrips = trips.filter(trip => trip.Veículo === vehicle);
             
             if (vehicleTrips.length === 0) return null;
             
-            // Ordena por data decrescente
             const sortedTrips = [...vehicleTrips].sort((a, b) => {
                 return new Date(b.Data) - new Date(a.Data);
             });
@@ -850,7 +825,6 @@
             return sortedTrips[0].KmChegada;
         }
 
-        // Funções de renderização
         function renderTrips() {
             const tripsBody = document.getElementById('tripsBody');
             const noDataMessage = document.getElementById('noDataMessage');
@@ -863,11 +837,10 @@
             
             noDataMessage.style.display = 'none';
             
-            // Limita a exibição às 10 últimas viagens
             const latestTrips = trips.slice(-10).reverse();
             
             latestTrips.forEach((trip, index) => {
-                const rowIndex = trips.length - 1 - index; // Calcula o índice correto
+                const rowIndex = trips.length - 1 - index;
                 const row = tripsBody.insertRow();
                 const distance = trip.KmChegada - trip.KmSaída;
                 
@@ -878,6 +851,7 @@
                     <td data-label="Km Saída">${trip.KmSaída.toLocaleString()}</td>
                     <td data-label="Km Chegada">${trip.KmChegada.toLocaleString()}</td>
                     <td data-label="Distância">${distance.toLocaleString()} km</td>
+                    <td data-label="Atividades">${trip.Atividades}</td>
                     <td data-label="Ações"><button class="delete-btn" onclick="deleteTripFromSheets(${rowIndex})"><i class="fas fa-trash-alt"></i></button></td>
                 `;
             });
@@ -893,7 +867,6 @@
             const currentMonth = now.getMonth();
             const currentYear = now.getFullYear();
 
-            // Filtra as viagens para o mês e ano atuais
             const monthlyTrips = trips.filter(trip => {
                 if (!trip.Data) return false;
                 
@@ -909,7 +882,6 @@
                 }
             });
 
-            // Calcular km percorridos por veículo no mês atual
             const vehicleKm = {};
             monthlyTrips.forEach(trip => {
                 if (trip.KmChegada && trip.KmSaída) {
@@ -922,7 +894,6 @@
                 }
             });
 
-            // Calcular número de viagens por veículo no mês atual
             const vehicleTrips = {};
             monthlyTrips.forEach(trip => {
                 if (vehicleTrips[trip.Veículo]) {
@@ -932,7 +903,6 @@
                 }
             });
 
-            // Para cada veículo, criar um card
             vehicles.forEach(vehicle => {
                 const card = document.createElement('div');
                 const vehicleClass = vehicle.toLowerCase().includes('ford') ? 'ford-bg' : 'fiat-bg';
@@ -1010,17 +980,14 @@
             if (!dateString) return 'Data inválida';
             
             try {
-                // Remove qualquer informação de hora
                 const dateOnly = dateString.toString().split(' ')[0];
                 const parts = dateOnly.split('-');
                 
-                // Formato YYYY-MM-DD
                 if (parts.length === 3) {
                     const [year, month, day] = parts;
                     return `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${year}`;
                 }
                 
-                // Tenta converter se estiver em outro formato
                 const date = new Date(dateOnly);
                 if (!isNaN(date.getTime())) {
                     const day = String(date.getDate()).padStart(2, '0');
@@ -1029,23 +996,20 @@
                     return `${day}/${month}/${year}`;
                 }
                 
-                return dateOnly; // Retorna sem a parte da hora
-                
+                return dateOnly;
             } catch (e) {
                 console.error("Erro ao formatar data:", dateString, e);
                 return dateString;
             }
-        }    
-        // Event Listeners
+        }
+        
         document.addEventListener('DOMContentLoaded', () => {
-            // Definir data atual como padrão
             const today = new Date();
             const formattedDate = today.toISOString().split('T')[0];
             document.getElementById('date').value = formattedDate;
             
             loadDataFromSheets();
             
-            // Sugestão de KM inicial
             const vehicleSelect = document.getElementById('vehicle');
             const dateInput = document.getElementById('date');
             const kmStartInput = document.getElementById('kmStart');
@@ -1077,7 +1041,6 @@
                 kmSuggestion.style.display = 'none';
             });
             
-            // Envio do formulário
             document.getElementById('tripForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 
@@ -1088,7 +1051,6 @@
                 const kmEnd = parseInt(document.getElementById('kmEnd').value, 10);
                 const activities = document.getElementById('activities').value;
                 
-                // Validações
                 if (!driver || !vehicle || !date || isNaN(kmStart) || isNaN(kmEnd) || !activities) {
                     alert('Por favor, preencha todos os campos!');
                     return;
@@ -1111,28 +1073,20 @@
                 const success = await addTripToSheets(newTrip);
                 if (success) {
                     e.target.reset();
-                    // Restaurar a data atual
                     document.getElementById('date').value = formattedDate;
                     kmSuggestion.style.display = 'none';
                 }
             });
             
-            // Botões do header
             document.getElementById('cloudInfoBtn').addEventListener('click', () => {
                 alert('Este é um sistema de demonstração que se conecta a uma planilha pública do Google Sheets. Para usá-lo, você deve criar e configurar seu próprio script de API.');
             });
             
-            document.getElementById('exportBtn').addEventListener('click', () => {
-                const sheetUrl = 'https://docs.google.com/spreadsheets/d/1DOUTtrkbNH0s-f1Beipqsz85czdEAkTytSxZOnhieYc/edit?gid=0#gid=0';
-                window.open(sheetUrl, '_blank');
-            });
-            
             document.getElementById('helpBtn').addEventListener('click', () => {
-                alert('Ajuda: Preencha o formulário para registrar uma nova viagem. A tabela ao lado mostrará o histórico. Para excluir um registro, clique no botão de lixeira correspondente.');
+                alert('Ajuda: Preencha o formulário para registrar uma nova viagem. A tabela ao lado mostrará o histórico, incluindo atividades realizadas. Para excluir um registro, clique no botão de lixeira correspondente.');
             });
         });
 
-        // Função de teste temporária - execute no console do navegador
         window.testAPI = async function() {
             console.log("🧪 Testando conexão com a API...");
             
