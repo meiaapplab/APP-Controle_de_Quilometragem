@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Controle de Frota</title>
+    <title>Controle de Quilometragem</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     
     <style>
@@ -17,7 +17,7 @@
             --card-background: #fff;
             --text-color: #2d3436;
             --ford-blue: #143577;
-            --fiat-red: #d11c1e;
+            --fiat-GREEN: #d11c1e;
         }
 
         * {
@@ -458,14 +458,13 @@
             <p>Registro de Viagens</p>
             <div class="header-buttons">
                 <button class="header-btn" id="cloudInfoBtn"><i class="fas fa-info-circle"></i> Sobre o App</button>
-                <button class="header-btn" id="exportBtn"><i class="fas fa-external-link-alt"></i> Ver Planilha</button>
                 <button class="header-btn" id="helpBtn"><i class="fas fa-question-circle"></i> Ajuda</button>
             </div>
         </header>
 
         <div id="loading" class="loading-container">
             <div class="spinner"></div>
-            <p id="syncStatus">Sincronizando com o Google Sheets...</p>
+            <p id="syncStatus">Sincronizando Dados...</p>
         </div>
 
         <div class="vehicle-km-cards" id="vehicleKmContainer">
@@ -474,7 +473,7 @@
         <div class="content" id="appContent" style="display: none;">
             <section class="form-section">
                 <h2 class="section-title">
-                    <i class="fas fa-plus-circle"></i> Nova Viagem
+                    <i class="fas fa-plus-circle"></i> Adicionar Viagem
                 </h2>
                 
                 <div class="feature-highlight">
@@ -494,7 +493,6 @@
                     <div class="form-group">
                         <label for="vehicle">Veículo:</label>
                         <select id="vehicle" required>
-                            <option value="">Selecione um veículo</option>
                             <option value="FORD RANGER">FORD RANGER</option>
                             <option value="FIAT STRADA">FIAT STRADA</option>
                         </select>
@@ -560,7 +558,7 @@
         </div>
         
         <footer class="footer">
-            <p>Sistema de Controle de Viagens &copy; 2023 | Dados armazenados na núvem - Disponível 24h</p>
+            <p>Sistema de Controle de Quilometragem e Atividades&copy; 2025 |  MEIA APP  | Dados armazenados na núvem</p>
         </footer>
     </div>
 
@@ -830,7 +828,7 @@
             vehicles.forEach(vehicle => {
                 const card = document.createElement('div');
                 const vehicleClass = vehicle.toLowerCase().includes('ford') ? 'ford-bg' : 'fiat-bg';
-                const vehicleIcon = vehicle.toLowerCase().includes('ford') ? 'fas fa-car' : 'fas fa-truck-pickup';
+                const vehicleIcon = vehicle.toLowerCase().includes('ford') ? 'fas fa-truck-pickup' : 'fas fa-car';
                 const kmTotal = vehicleKm[vehicle] || 0;
                 const totalTrips = vehicleTrips[vehicle] || 0;
 
@@ -1038,4 +1036,5 @@
     </script>
 </body>
 </html>
+
 
