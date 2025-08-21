@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
         :root {
             --primary-color: #2c3e50;
             --secondary-color: #34495e;
@@ -69,7 +70,7 @@
             display: flex;
             justify-content: center;
             gap: 15px;
-            flex-wrap: wrap; /* Permite que os botões quebrem em telas pequenas */
+            flex-wrap: wrap; 
         }
 
         .header-btn {
@@ -212,9 +213,8 @@
             min-width: 300px;
         }
         
-        /* Ajuste do layout para telas menores (smartphones) */
         .form-section {
-            flex: 1 1 100%; /* Ocupa 100% da largura em telas pequenas */
+            flex: 1 1 100%; 
         }
         .data-section {
             flex-grow: 1;
@@ -368,7 +368,7 @@
         
         #tripsTable {
             width: 100%;
-            min-width: 600px; /* Garante que a tabela tenha um tamanho mínimo para o scroll */
+            min-width: 600px; 
             border-collapse: collapse;
             font-size: 0.9rem;
         }
@@ -453,8 +453,8 @@
 <body>
     <div class="container">
         <header class="header">
-            <h1>Controle de Quilometragem</h1>
-            <p>Registro de Viagens e Atividades</p>
+            <h1>Controle de Frota</h1>
+            <p>Registro de Viagens</p>
             <div class="header-buttons">
                 <button class="header-btn" id="cloudInfoBtn"><i class="fas fa-info-circle"></i> Sobre o App</button>
                 <button class="header-btn" id="exportBtn"><i class="fas fa-external-link-alt"></i> Ver Planilha</button>
@@ -493,6 +493,7 @@
                     <div class="form-group">
                         <label for="vehicle">Veículo:</label>
                         <select id="vehicle" required>
+                            <option value="">Selecione um veículo</option>
                             <option value="FORD RANGER">FORD RANGER</option>
                             <option value="FIAT STRADA">FIAT STRADA</option>
                         </select>
@@ -558,11 +559,11 @@
         </div>
         
         <footer class="footer">
-            <p>Sistema de Controle de Quilometragem e Atividades &copy; 2025 | MEIA APP | Dados Sempre Sincronizados</p>
+            <p>Sistema de Controle de Viagens &copy; 2023 | Dados armazenados na núvem - Disponível 24h</p>
         </footer>
     </div>
 
-   <script>
+    <script>
         // Configuração da API do Google Apps Script
         const API_URL = "https://script.google.com/macros/s/AKfycbx7K5XZphCO3TAJfphWe5XSnpAdMA8Ls4lTmKp-RjSub5FYAlUs7jX5R2rGzEpDPgWEjg/exec";
 
@@ -770,7 +771,7 @@
             vehicles.forEach(vehicle => {
                 const card = document.createElement('div');
                 const vehicleClass = vehicle.toLowerCase().includes('ford') ? 'ford-bg' : 'fiat-bg';
-                const vehicleIcon = vehicle.toLowerCase().includes('ford') ? 'fas fa-truck-pickup' : 'fas fa-car' ;
+                const vehicleIcon = vehicle.toLowerCase().includes('ford') ? 'fas fa-car' : 'fas fa-truck-pickup';
                 const kmTotal = vehicleKm[vehicle] || 0;
                 const totalTrips = vehicleTrips[vehicle] || 0;
 
@@ -917,7 +918,7 @@
             
             // Botões do header
             document.getElementById('cloudInfoBtn').addEventListener('click', () => {
-                alert('Este é um sistema de demonstração que se conecta a uma planilha online. Lembrando-o que estamos em desenvolvimento. Me desculpo pelo transtorno.');
+                alert('Este é um sistema de demonstração que se conecta a uma planilha pública do Google Sheets. Para usá-lo, você deve criar e configurar seu próprio script de API.');
             });
             
             document.getElementById('exportBtn').addEventListener('click', () => {
@@ -932,4 +933,3 @@
     </script>
 </body>
 </html>
-
