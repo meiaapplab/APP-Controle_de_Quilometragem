@@ -899,30 +899,35 @@
         }
         
         function formatDate(dateString) {
-            if (!dateString) return 'Data inválida';
-            
-            try {
-                // Tenta converter a data (formato YYYY-MM-DD)
-                const date = new Date(dateString);
-                if (isNaN(date.getTime())) {
-                    // Se falhar, tenta dividir manualmente
-                    const parts = dateString.split('-');
-                    if (parts.length === 3) {
-                        return `${parts[2]}/${parts[1]}/${parts[0]}`;
-                    }
-                    return dateString;
-                }
-                
-                const day = String(date.getDate()).padStart(2, '0');
-                const month = String(date.getMonth() + 1).padStart(2, '0');
-                const year = date.getFullYear();
-                return `${day}/${month}/${year}`;
-            } catch (e) {
-                console.error("Erro ao formatar data:", dateString, e);
-                return dateString;
-            }
+    if (!dateString) return 'Data inválida';
+    
+    try {
+        // Remove qualquer informação de hora
+        const dateOnly = dateString.toString().split(' ')[0];
+        const parts = dateOnly.split('-');
+        
+        // Formato YYYY-MM-DD
+        if (parts.length === 3) {
+            const [year, month, day] = parts;
+            return `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${year}`;
         }
         
+        // Tenta converter se estiver em outro formato
+        const date = new Date(dateOnly);
+        if (!isNaN(date.getTime())) {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+        
+        return dateOnly; // Retorna sem a parte da hora
+        
+    } catch (e) {
+        console.error("Erro ao formatar data:", dateString, e);
+        return dateString;
+    }
+}    
         // Event Listeners
         document.addEventListener('DOMContentLoaded', () => {
             // Definir data atual como padrão
@@ -1036,6 +1041,7 @@
     </script>
 </body>
 </html>
+
 
 
 
