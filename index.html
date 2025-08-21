@@ -590,7 +590,14 @@
                     throw new Error(`Erro HTTP: ${response.status}`);
                 }
                 
-                trips = await response.json();
+                const data = await response.json();
+                
+                // Verifica se a resposta contém um erro
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                trips = data;
                 
                 // Atualizar listas de sugestões
                 drivers = [...new Set(trips.map(trip => trip.Motorista))];
@@ -613,8 +620,15 @@
 
             } catch (error) {
                 console.error("Erro ao carregar dados:", error);
-                syncStatus.textContent = "Erro ao carregar dados. Tente novamente mais tarde.";
+                syncStatus.textContent = "Erro ao carregar dados: " + error.message;
                 syncStatus.style.color = '#e74c3c';
+                
+                // Mostrar conteúdo mesmo com erro para não travar a aplicação
+                setTimeout(() => {
+                    loadingElement.style.display = 'none';
+                    appContent.style.display = 'flex';
+                    vehicleKmContainer.style.display = 'grid';
+                }, 2000);
             }
         }
         
@@ -624,12 +638,22 @@
                 loadingElement.style.display = 'flex';
                 syncStatus.textContent = "Salvando viagem...";
                 
-                const response = await fetch(`${API_URL}?action=addTrip`, {
+                // Formatar dados para o formato esperado pelo Google Sheets
+                const formattedTrip = {
+                    driver: newTrip.driver,
+                    vehicle: newTrip.vehicle,
+                    date: formatDateForSheets(newTrip.date),
+                    kmStart: parseInt(newTrip.kmStart, 10),
+                    kmEnd: parseInt(newTrip.kmEnd, 10),
+                    activities: newTrip.activities
+                };
+                
+                const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'application/x-www-form-urlencoded',
                     },
-                    body: JSON.stringify(newTrip)
+                    body: `action=addTrip&data=${encodeURIComponent(JSON.stringify(formattedTrip))}`
                 });
                 
                 if (!response.ok) {
@@ -639,14 +663,13 @@
                 const result = await response.json();
                 if (result.status === 'success') {
                     await loadDataFromSheets();
-                    loadingElement.style.display = 'none';
                     return true;
                 } else {
-                    throw new Error(result.message);
+                    throw new Error(result.message || "Erro desconhecido ao salvar");
                 }
             } catch (error) {
                 console.error("Erro ao salvar dados:", error);
-                alert("Erro ao salvar a viagem. Verifique a conexão ou tente novamente.");
+                alert("Erro ao salvar a viagem: " + error.message);
                 loadingElement.style.display = 'none';
                 return false;
             }
@@ -661,12 +684,12 @@
                 loadingElement.style.display = 'flex';
                 syncStatus.textContent = "Excluindo registro...";
                 
-                const response = await fetch(`${API_URL}?action=deleteTrip`, {
+                const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'application/x-www-form-urlencoded',
                     },
-                    body: JSON.stringify({ index })
+                    body: `action=deleteTrip&index=${index}`
                 });
                 
                 if (!response.ok) {
@@ -676,26 +699,38 @@
                 const result = await response.json();
                 if (result.status === 'success') {
                     await loadDataFromSheets();
-                    loadingElement.style.display = 'none';
                 } else {
                     throw new Error(result.message);
                 }
             } catch (error) {
                 console.error("Erro ao excluir dados:", error);
-                alert("Erro ao excluir o registro. Verifique a conexão ou tente novamente.");
+                alert("Erro ao excluir o registro: " + error.message);
                 loadingElement.style.display = 'none';
             }
         }
         
+        // Função para formatar data para o formato do Google Sheets (YYYY-MM-DD)
+        function formatDateForSheets(dateString) {
+            const date = new Date(dateString);
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+        
         // Função para encontrar o último Km de Chegada
         function findLastKmEnd(vehicle, date) {
-            const sortedTrips = trips.filter(trip => trip.Veículo === vehicle)
-                                     .sort((a, b) => new Date(b.Data) - new Date(a.Data));
+            // Filtra viagens do veículo selecionado
+            const vehicleTrips = trips.filter(trip => trip.Veículo === vehicle);
             
-            if (sortedTrips.length > 0) {
-                return sortedTrips[0].KmChegada;
-            }
-            return null;
+            if (vehicleTrips.length === 0) return null;
+            
+            // Ordena por data decrescente
+            const sortedTrips = [...vehicleTrips].sort((a, b) => {
+                return new Date(b.Data) - new Date(a.Data);
+            });
+            
+            return sortedTrips[0].KmChegada;
         }
 
         // Funções de renderização
@@ -704,7 +739,7 @@
             const noDataMessage = document.getElementById('noDataMessage');
             tripsBody.innerHTML = '';
             
-            if (trips.length === 0) {
+            if (!trips || trips.length === 0) {
                 noDataMessage.style.display = 'block';
                 return;
             }
@@ -715,7 +750,7 @@
             const latestTrips = trips.slice(-10).reverse();
             
             latestTrips.forEach((trip, index) => {
-                const rowIndex = trips.findIndex(t => t === trip);
+                const rowIndex = trips.length - 1 - index; // Calcula o índice correto
                 const row = tripsBody.insertRow();
                 const distance = trip.KmChegada - trip.KmSaída;
                 
@@ -735,7 +770,7 @@
             const container = document.getElementById('vehicleKmContainer');
             container.innerHTML = '';
 
-            if (vehicles.length === 0) return;
+            if (!vehicles || vehicles.length === 0) return;
 
             const now = new Date();
             const currentMonth = now.getMonth();
@@ -743,20 +778,30 @@
 
             // Filtra as viagens para o mês e ano atuais
             const monthlyTrips = trips.filter(trip => {
-                const parts = trip.Data.split('-');
-                const tripDate = new Date(parts[0], parts[1] - 1, parts[2]); // Formato AAAA-MM-DD
+                if (!trip.Data) return false;
                 
-                return tripDate.getMonth() === currentMonth && tripDate.getFullYear() === currentYear;
+                try {
+                    const parts = trip.Data.split('-');
+                    if (parts.length !== 3) return false;
+                    
+                    const tripDate = new Date(parts[0], parts[1] - 1, parts[2]);
+                    return tripDate.getMonth() === currentMonth && tripDate.getFullYear() === currentYear;
+                } catch (e) {
+                    console.error("Erro ao processar data:", trip.Data, e);
+                    return false;
+                }
             });
 
             // Calcular km percorridos por veículo no mês atual
             const vehicleKm = {};
             monthlyTrips.forEach(trip => {
-                const distance = trip.KmChegada - trip.KmSaída;
-                if (vehicleKm[trip.Veículo]) {
-                    vehicleKm[trip.Veículo] += distance;
-                } else {
-                    vehicleKm[trip.Veículo] = distance;
+                if (trip.KmChegada && trip.KmSaída) {
+                    const distance = trip.KmChegada - trip.KmSaída;
+                    if (vehicleKm[trip.Veículo]) {
+                        vehicleKm[trip.Veículo] += distance;
+                    } else {
+                        vehicleKm[trip.Veículo] = distance;
+                    }
                 }
             });
 
@@ -804,7 +849,8 @@
             
             driverInput.addEventListener('input', function() {
                 const query = this.value.toLowerCase();
-                const filteredDrivers = drivers.filter(driver => driver.toLowerCase().includes(query));
+                const filteredDrivers = drivers.filter(driver => 
+                    driver && driver.toLowerCase().includes(query));
                 
                 driverSuggestions.innerHTML = '';
                 
@@ -844,15 +890,37 @@
         }
         
         function formatDate(dateString) {
-            const date = new Date(dateString);
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const year = date.getFullYear();
-            return `${day}/${month}/${year}`;
+            if (!dateString) return 'Data inválida';
+            
+            try {
+                // Tenta converter a data (formato YYYY-MM-DD)
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) {
+                    // Se falhar, tenta dividir manualmente
+                    const parts = dateString.split('-');
+                    if (parts.length === 3) {
+                        return `${parts[2]}/${parts[1]}/${parts[0]}`;
+                    }
+                    return dateString;
+                }
+                
+                const day = String(date.getDate()).padStart(2, '0');
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const year = date.getFullYear();
+                return `${day}/${month}/${year}`;
+            } catch (e) {
+                console.error("Erro ao formatar data:", dateString, e);
+                return dateString;
+            }
         }
         
         // Event Listeners
         document.addEventListener('DOMContentLoaded', () => {
+            // Definir data atual como padrão
+            const today = new Date();
+            const formattedDate = today.toISOString().split('T')[0];
+            document.getElementById('date').value = formattedDate;
+            
             loadDataFromSheets();
             
             // Sugestão de KM inicial
@@ -898,6 +966,12 @@
                 const kmEnd = parseInt(document.getElementById('kmEnd').value, 10);
                 const activities = document.getElementById('activities').value;
                 
+                // Validações
+                if (!driver || !vehicle || !date || isNaN(kmStart) || isNaN(kmEnd) || !activities) {
+                    alert('Por favor, preencha todos os campos!');
+                    return;
+                }
+                
                 if (kmEnd < kmStart) {
                     alert('Km de chegada não pode ser menor que o Km de saída!');
                     return;
@@ -915,6 +989,8 @@
                 const success = await addTripToSheets(newTrip);
                 if (success) {
                     e.target.reset();
+                    // Restaurar a data atual
+                    document.getElementById('date').value = formattedDate;
                     kmSuggestion.style.display = 'none';
                 }
             });
