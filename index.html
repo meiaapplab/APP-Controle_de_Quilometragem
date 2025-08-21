@@ -889,7 +889,7 @@
         
         function updateVehicleSelect() {
             const vehicleSelect = document.getElementById('vehicle');
-            vehicleSelect.innerHTML = '<option value="">Selecione um veículo</option>';
+            vehicleSelect.innerHTML = '<option value=""></option>';
             vehicles.forEach(vehicle => {
                 const option = document.createElement('option');
                 option.value = vehicle;
@@ -1041,6 +1041,7 @@
     </script>
 </body>
 </html>
+
 
 
 
