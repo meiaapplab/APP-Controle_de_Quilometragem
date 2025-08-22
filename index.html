@@ -1055,7 +1055,7 @@
             });
         }
 
-        function renderVehicleKmCards() {
+       function renderVehicleKmCards() {
             const container = document.getElementById('vehicleKmContainer');
             container.innerHTML = '';
 
@@ -1077,9 +1077,9 @@
                     const day = parseInt(parts[2], 10);
                     
                     // CORREÇÃO AQUI
-                    const tripDate = new Date(year, month, day);
+                    const tripDate = new Date(Date.UTC(year, month, day));
 
-                    return tripDate.getMonth() === currentMonth && tripDate.getFullYear() === currentYear;
+                    return tripDate.getUTCMonth() === currentMonth && tripDate.getUTCFullYear() === currentYear;
                 } catch (e) {
                     console.error("Erro ao processar data:", trip.Data, e);
                     return false;
@@ -1292,6 +1292,7 @@
     </script>
 </body>
 </html>
+
 
 
 
