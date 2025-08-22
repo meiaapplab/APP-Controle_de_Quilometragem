@@ -256,6 +256,60 @@
             box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
         }
 
+        /* NOVO: Estilos para os botões de seleção de veículo */
+        .vehicle-selection {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .vehicle-btn {
+            padding: 12px 8px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 60px;
+        }
+
+        .vehicle-btn i {
+            font-size: 1.4rem;
+            margin-bottom: 5px;
+        }
+
+        .vehicle-btn.ford {
+            color: var(--ford-blue);
+            border-color: #d0d7e0;
+        }
+
+        .vehicle-btn.fiat {
+            color: var(--fiat-red);
+            border-color: #f0d0d0;
+        }
+
+        .vehicle-btn.selected {
+            border-width: 3px;
+            transform: scale(1.02);
+        }
+
+        .vehicle-btn.ford.selected {
+            border-color: var(--ford-blue);
+            background-color: #e8edf7;
+        }
+
+        .vehicle-btn.fiat.selected {
+            border-color: var(--fiat-red);
+            background-color: #fbe8e8;
+        }
+
         .datalist-container {
             position: relative;
         }
@@ -481,6 +535,22 @@
                 font-size: 1.4rem;
             }
 
+            /* Ajustes para botões de veículo em mobile */
+            .vehicle-selection {
+                grid-template-columns: 1fr 1fr;
+                gap: 6px;
+            }
+
+            .vehicle-btn {
+                padding: 10px 5px;
+                min-height: 50px;
+                font-size: 0.85rem;
+            }
+
+            .vehicle-btn i {
+                font-size: 1.2rem;
+            }
+
             .content {
                 flex-direction: column;
                 gap: 8px;
@@ -580,11 +650,20 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="vehicle">Veículo:</label>
-                        <select id="vehicle" required>
-                            <option value="FORD RANGER">FORD RANGER</option>
-                            <option value="FIAT STRADA">FIAT STRADA</option>
-                        </select>
+                        <label>Selecione o Veículo:</label>
+                        <!-- NOVO: Botões de seleção de veículo -->
+                        <div class="vehicle-selection">
+                            <button type="button" class="vehicle-btn ford" data-vehicle="FORD RANGER">
+                                <i class="fas fa-truck-pickup"></i>
+                                <span>FORD RANGER</span>
+                            </button>
+                            <button type="button" class="vehicle-btn fiat" data-vehicle="FIAT STRADA">
+                                <i class="fas fa-car"></i>
+                                <span>FIAT STRADA</span>
+                            </button>
+                        </div>
+                        <!-- Campo hidden para armazenar o valor selecionado -->
+                        <input type="hidden" id="vehicle" name="vehicle" required>
                     </div>
                     
                     <div class="form-group">
@@ -665,6 +744,9 @@
         const vehicleKmContainer = document.getElementById('vehicleKmContainer');
         const appContent = document.getElementById('appContent');
         
+        // NOVO: Variável para controlar o veículo selecionado
+        let selectedVehicle = null;
+        
         async function loadDataFromSheets() {
             try {
                 syncStatus.textContent = "Carregando dados...";
@@ -690,7 +772,6 @@
                 vehicles = Array.from(vehicleSet);
                 
                 updateDriverSuggestions();
-                updateVehicleSelect();
                 renderTrips();
                 renderVehicleKmCards();
                 
@@ -942,17 +1023,6 @@
             });
         }
         
-        function updateVehicleSelect() {
-            const vehicleSelect = document.getElementById('vehicle');
-            vehicleSelect.innerHTML = '<option value=""></option>';
-            vehicles.forEach(vehicle => {
-                const option = document.createElement('option');
-                option.value = vehicle;
-                option.textContent = vehicle;
-                vehicleSelect.appendChild(option);
-            });
-        }
-        
         function formatDate(dateString) {
             if (!dateString) return 'Data inválida';
             
@@ -980,54 +1050,80 @@
             }
         }
         
+        // NOVO: Função para lidar com a seleção de veículo
+        function setupVehicleSelection() {
+            const vehicleBtns = document.querySelectorAll('.vehicle-btn');
+            const vehicleInput = document.getElementById('vehicle');
+            
+            vehicleBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Remove a seleção anterior
+                    vehicleBtns.forEach(b => b.classList.remove('selected'));
+                    
+                    // Adiciona a seleção ao botão clicado
+                    this.classList.add('selected');
+                    
+                    // Atualiza o valor do campo hidden
+                    selectedVehicle = this.getAttribute('data-vehicle');
+                    vehicleInput.value = selectedVehicle;
+                    
+                    // Atualiza a sugestão de KM
+                    checkKmSuggestion();
+                });
+            });
+        }
+        
+        // NOVO: Atualizada para usar o selectedVehicle
+        function checkKmSuggestion() {
+            const dateInput = document.getElementById('date');
+            const selectedDate = dateInput.value;
+            
+            if (selectedVehicle && selectedDate) {
+                const lastKm = findLastKmEnd(selectedVehicle, selectedDate);
+                if (lastKm !== null) {
+                    document.getElementById('lastKmValue').textContent = lastKm;
+                    document.getElementById('kmSuggestion').style.display = 'flex';
+                } else {
+                    document.getElementById('kmSuggestion').style.display = 'none';
+                }
+            } else {
+                document.getElementById('kmSuggestion').style.display = 'none';
+            }
+        }
+        
         document.addEventListener('DOMContentLoaded', () => {
             const today = new Date();
             const formattedDate = today.toISOString().split('T')[0];
             document.getElementById('date').value = formattedDate;
             
+            // NOVO: Configura os botões de seleção de veículo
+            setupVehicleSelection();
+            
             loadDataFromSheets();
             
-            const vehicleSelect = document.getElementById('vehicle');
             const dateInput = document.getElementById('date');
             const kmStartInput = document.getElementById('kmStart');
-            const kmSuggestion = document.getElementById('kmSuggestion');
-            const lastKmValue = document.getElementById('lastKmValue');
             const useSuggestionBtn = document.getElementById('useSuggestionBtn');
             
-            const checkKmSuggestion = () => {
-                const selectedVehicle = vehicleSelect.value;
-                const selectedDate = dateInput.value;
-                
-                if (selectedVehicle && selectedDate) {
-                    const lastKm = findLastKmEnd(selectedVehicle, selectedDate);
-                    if (lastKm !== null) {
-                        lastKmValue.textContent = lastKm;
-                        kmSuggestion.style.display = 'flex';
-                    } else {
-                        kmSuggestion.style.display = 'none';
-                    }
-                } else {
-                    kmSuggestion.style.display = 'none';
-                }
-            };
-            
-            vehicleSelect.addEventListener('change', checkKmSuggestion);
+            // NOVO: Atualizada para não depender do select
             dateInput.addEventListener('change', checkKmSuggestion);
+            
             useSuggestionBtn.addEventListener('click', () => {
-                kmStartInput.value = lastKmValue.textContent;
-                kmSuggestion.style.display = 'none';
+                kmStartInput.value = document.getElementById('lastKmValue').textContent;
+                document.getElementById('kmSuggestion').style.display = 'none';
             });
             
             document.getElementById('tripForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 
                 const driver = document.getElementById('driver').value;
-                const vehicle = document.getElementById('vehicle').value;
+                const vehicle = document.getElementById('vehicle').value; // Agora vem do hidden field
                 const date = document.getElementById('date').value;
                 const kmStart = parseInt(document.getElementById('kmStart').value, 10);
                 const kmEnd = parseInt(document.getElementById('kmEnd').value, 10);
                 const activities = document.getElementById('activities').value;
                 
+                // Validações
                 if (!driver || !vehicle || !date || isNaN(kmStart) || isNaN(kmEnd) || !activities) {
                     alert('Por favor, preencha todos os campos!');
                     return;
@@ -1051,7 +1147,15 @@
                 if (success) {
                     e.target.reset();
                     document.getElementById('date').value = formattedDate;
-                    kmSuggestion.style.display = 'none';
+                    
+                    // NOVO: Limpa a seleção de veículo
+                    document.querySelectorAll('.vehicle-btn').forEach(btn => {
+                        btn.classList.remove('selected');
+                    });
+                    selectedVehicle = null;
+                    document.getElementById('vehicle').value = '';
+                    
+                    document.getElementById('kmSuggestion').style.display = 'none';
                 }
             });
             
@@ -1080,5 +1184,3 @@
     </script>
 </body>
 </html>
-
-
