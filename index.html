@@ -1,101 +1,124 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sisteminha de Viagem</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Controle de Quilometragem</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        /* Estilos anteriores mantidos */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --accent-color: #3498db;
+            --background-color: #ecf0f1;
+            --card-background: #fff;
+            --text-color: #2d3436;
+            --ford-blue: #143577;
+            --fiat-red: #d11c1e;
+            --driver-xumbrega: #2ecc71;
+            --driver-mumia: #e67e22;
+            --driver-orientados: #9b59b6;
+        }
+
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            background-color: #f0f2f5;
-            color: #333;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.4;
             display: flex;
-            justify-content: center;
-            align-items: flex-start;
+            flex-direction: column;
             min-height: 100vh;
+            font-size: 16px;
+            overflow-x: hidden;
         }
 
         .container {
-            width: 100%;
-            max-width: 600px;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 20px;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        h1 {
-            color: #444;
-            font-size: 2em;
-            margin: 0;
-        }
-
-        h2 {
-            margin-top: 40px;
-            border-bottom: 2px solid #ccc;
-            padding-bottom: 5px;
-            color: #555;
-        }
-
-        .status-bar {
-            background-color: #e0e0e0;
+            max-width: 100%;
+            margin: 0 auto;
             padding: 10px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-top: 15px;
-        }
-
-        .status-text {
-            font-size: 0.9em;
-            color: #666;
-            font-style: italic;
-        }
-
-        .status-buttons {
-            display: flex;
-            gap: 10px;
-        }
-
-        .status-buttons button {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 1.1em;
-            color: #666;
-        }
-
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
             width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
+            flex-grow: 1;
         }
 
-        .loading-spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #4CAF50;
-            border-radius: 50%;
+        .header {
+            background-color: var(--primary-color);
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 1.6rem;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        .header-buttons {
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .header-btn {
+            background-color: var(--accent-color);
+            color: #fff;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            font-size: 0.9rem;
+            font-weight: 600;
+            min-width: 110px;
+        }
+
+        .header-btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .header-btn i {
+            margin-right: 6px;
+        }
+
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 70vh;
+            text-align: center;
+        }
+
+        .loading-container .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
             width: 40px;
             height: 40px;
-            animation: spin 1s linear infinite;
+            border-radius: 50%;
+            border-left-color: var(--accent-color);
+            animation: spin 1s ease infinite;
+            margin-bottom: 10px;
         }
 
         @keyframes spin {
@@ -103,126 +126,421 @@
             100% { transform: rotate(360deg); }
         }
 
-        .form-section {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            margin-top: 20px;
-        }
-        
-        .form-group {
-            margin-bottom: 15px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        input[type="text"],
-        input[type="date"],
-        input[type="number"],
-        textarea {
-            width: calc(100% - 22px);
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            box-sizing: border-box;
-            font-size: 1em;
-        }
-
-        .btn-group {
-            display: flex;
+        .vehicle-km-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 10px;
             margin-bottom: 15px;
+        }
+
+        .vehicle-card {
+            background-color: var(--card-background);
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .vehicle-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .vehicle-card.ford-bg {
+            border: 2px solid var(--ford-blue);
+        }
+        .vehicle-card.fiat-bg {
+            border: 2px solid var(--fiat-red);
+        }
+
+        .vehicle-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            gap: 6px;
+        }
+
+        .vehicle-card-header h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .vehicle-card-header i {
+            font-size: 1.6rem;
+        }
+
+        .ford-color { color: var(--ford-blue); }
+        .fiat-color { color: var(--fiat-red); }
+
+        .vehicle-km {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .vehicle-stats {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            color: #6c757d;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stat-item-value {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .stat-item-label {
+            font-size: 0.7rem;
+        }
+
+        .content {
+            display: flex;
+            gap: 10px;
             flex-wrap: wrap;
+            margin-top: 10px;
         }
 
-        .btn {
-            background-color: #e9e9e9;
-            color: #333;
-            border: none;
-            padding: 10px 15px;
+        .form-section, .data-section {
+            background-color: var(--card-background);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            flex: 1;
+            min-width: 100%;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+            font-weight: 600;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 5px;
+        }
+
+        .section-title i {
+            margin-right: 6px;
+            color: var(--accent-color);
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 4px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-family: 'Poppins', sans-serif;
+            transition: border-color 0.3s ease;
+            line-height: 1.4;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+        }
+
+        .vehicle-selection, .driver-selection {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .vehicle-btn, .driver-btn {
+            padding: 12px 8px;
+            border: 2px solid #ddd;
             border-radius: 8px;
+            background-color: #f8f9fa;
             cursor: pointer;
-            font-size: 1em;
-            transition: background-color 0.3s;
-        }
-        
-        .btn.selected,
-        .btn:hover {
-            background-color: #ddd;
+            text-align: center;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 60px;
         }
 
-        .vehicle-btn.selected {
+        .vehicle-btn i, .driver-btn i {
+            font-size: 1.4rem;
+            margin-bottom: 5px;
+        }
+
+        .vehicle-btn.ford {
+            color: var(--ford-blue);
+            border-color: #d0d7e0;
+        }
+
+        .vehicle-btn.fiat {
+            color: var(--fiat-red);
+            border-color: #f0d0d0;
+        }
+
+        .driver-btn.xumbrega {
+            color: var(--driver-xumbrega);
+            border-color: #d0e8d7;
+        }
+
+        .driver-btn.mumia {
+            color: var(--driver-mumia);
+            border-color: #f0d7c0;
+        }
+
+        .driver-btn.orientados {
+            color: var(--driver-orientados);
+            border-color: #e0d0e8;
+        }
+
+        .vehicle-btn.selected, .driver-btn.selected {
+            border-width: 3px;
+            transform: scale(1.02);
+        }
+
+        .vehicle-btn.ford.selected {
+            border-color: var(--ford-blue);
+            background-color: #e8edf7;
+        }
+
+        .vehicle-btn.fiat.selected {
+            border-color: var(--fiat-red);
+            background-color: #fbe8e8;
+        }
+
+        .driver-btn.xumbrega.selected {
+            border-color: var(--driver-xumbrega);
+            background-color: #e8f5e9;
+        }
+
+        .driver-btn.mumia.selected {
+            border-color: var(--driver-mumia);
+            background-color: #fef5e7;
+        }
+
+        .driver-btn.orientados.selected {
+            border-color: var(--driver-orientados);
+            background-color: #f5e8fa;
+        }
+
+        .datalist-container {
+            position: relative;
+        }
+
+        .datalist-suggestions {
+            position: absolute;
+            background-color: var(--card-background);
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            width: 100%;
+            max-height: 120px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .datalist-item {
+            padding: 8px 10px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            font-size: 0.9rem;
+        }
+
+        .datalist-item:hover {
+            background-color: #f0f0f0;
+        }
+
+        .suggestion {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 8px;
+            background-color: #e8f5e9;
+            padding: 8px;
+            border-radius: 6px;
+        }
+
+        .suggestion p {
+            font-size: 0.85rem;
+            color: #2e7d32;
+        }
+
+        .suggestion-btn {
             background-color: #4CAF50;
-            color: #fff;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            font-size: 0.85rem;
         }
 
-        .driver-btn.selected {
-            background-color: #2196F3;
-            color: #fff;
+        .suggestion-btn:hover {
+            background-color: #43a047;
         }
 
         .submit-btn {
             width: 100%;
-            background-color: #4CAF50;
-            color: white;
-            padding: 12px;
+            padding: 10px;
+            background-color: var(--accent-color);
+            color: #fff;
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 600;
             cursor: pointer;
-            font-size: 1.1em;
-            margin-top: 10px;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-top: 8px;
+            position: relative;
         }
 
-        .submit-btn:hover {
-            background-color: #45a049;
+        .submit-btn:hover:not(:disabled) {
+            background-color: #2980b9;
+            transform: translateY(-2px);
         }
-        
+
         .submit-btn:disabled {
-            background-color: #ccc;
+            background-color: #95a5a6;
             cursor: not-allowed;
+            opacity: 0.7;
         }
 
-        .km-suggestion {
-            display: none;
+        .feature-highlight {
+            display: flex;
             align-items: center;
-            background-color: #e6f7ff;
-            border: 1px solid #b3e0ff;
+            gap: 10px;
+            background-color: #f2f4f6;
             padding: 10px;
             border-radius: 8px;
-            margin-bottom: 15px;
-            gap: 10px;
+            margin-bottom: 12px;
         }
 
-        .km-suggestion i {
-            color: #2196F3;
+        .feature-highlight i {
+            font-size: 1.8rem;
+            color: var(--accent-color);
         }
 
-        .km-suggestion button {
-            background-color: #2196F3;
-            color: white;
+        .feature-highlight strong {
+            color: var(--primary-color);
+            font-size: 0.9rem;
+        }
+
+        .table-container {
+            overflow-x: hidden;
+            margin-top: 10px;
+        }
+
+        #tripsTable {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            table-layout: fixed;
+        }
+
+        #tripsTable th, #tripsTable td {
+            padding: 5px 8px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        #tripsTable thead th {
+            background-color: var(--secondary-color);
+            color: #fff;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        #tripsTable tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        #tripsTable tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .delete-btn {
+            background-color: #e74c3c;
+            color: #fff;
             border: none;
-            padding: 8px 12px;
-            border-radius: 8px;
+            padding: 4px 6px;
+            border-radius: 4px;
             cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 0.85rem;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        #tripsList {
-            margin-top: 20px;
+        .delete-btn:hover {
+            background-color: #c0392b;
         }
 
+        .no-data {
+            text-align: center;
+            padding: 20px 10px;
+            color: #888;
+        }
+
+        .no-data i {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+
+        .no-data h3 {
+            font-size: 1.2rem;
+            margin-bottom: 4px;
+        }
+
+        .footer {
+            background-color: var(--primary-color);
+            color: #fff;
+            text-align: center;
+            padding: 10px;
+            margin-top: 10px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+
+        .footer p {
+            font-size: 0.7rem;
+            opacity: 0.7;
+        }
+
+        /* NOVOS ESTILOS PARA O HISTÓRICO DE VIAGENS */
         .trip-item {
-            background-color: #fff;
-            padding: 15px;
-            border-radius: 12px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            margin-bottom: 10px;
-            border-left: 5px solid #4CAF50;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 10px 0;
         }
 
         .trip-header {
@@ -233,321 +551,395 @@
         }
 
         .trip-info {
-            font-weight: bold;
+            font-weight: 600;
+            flex-grow: 1;
+        }
+
+        .trip-km {
+            margin-bottom: 5px;
             color: #555;
         }
 
-        .delete-btn {
-            background: none;
-            border: none;
-            color: #f44336;
-            cursor: pointer;
-            font-size: 1.2em;
-        }
-        
-        .trip-km {
-            font-size: 0.9em;
-            color: #888;
-        }
-
         .trip-activities {
-            font-size: 0.9em;
-            margin-top: 5px;
             color: #666;
-            white-space: pre-wrap;
-        }
-
-        #noDataMessage {
-            text-align: center;
-            color: #888;
             font-style: italic;
-            margin-top: 20px;
-            display: none;
         }
 
-        .vehicle-km-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
+        @media (max-width: 1080px) {
+            body {
+                font-size: 14px;
+            }
 
-        .vehicle-card {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            border-left: 5px solid;
-            transition: transform 0.3s;
-        }
-        
-        .vehicle-card:hover {
-            transform: translateY(-5px);
-        }
+            .container {
+                padding: 5px;
+            }
 
-        .vehicle-card.ford-bg { border-color: #2196F3; }
-        .vehicle-card.fiat-bg { border-color: #f44336; }
+            .header h1 {
+                font-size: 1.4rem;
+            }
 
-        .vehicle-card-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
+            .header p {
+                font-size: 0.75rem;
+            }
 
-        .vehicle-card-header i {
-            font-size: 1.5em;
-        }
+            .vehicle-km-cards {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
 
-        .ford-color { color: #2196F3; }
-        .fiat-color { color: #f44336; }
+            .vehicle-card {
+                padding: 8px;
+            }
 
-        .vehicle-km {
-            font-size: 2em;
-            font-weight: bold;
-        }
+            .vehicle-card-header h3 {
+                font-size: 1.1rem;
+            }
 
-        .vehicle-stats {
-            margin-top: 15px;
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.9em;
-            color: #888;
-        }
+            .vehicle-km {
+                font-size: 1.4rem;
+            }
 
-        #toast-container {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1000;
-            display: flex;
-            flex-direction: column-reverse;
-            gap: 10px;
-            width: 90%;
-            max-width: 400px;
-        }
+            .vehicle-selection, .driver-selection {
+                grid-template-columns: 1fr 1fr;
+                gap: 6px;
+            }
 
-        .toast {
-            color: #fff;
-            padding: 15px;
-            border-radius: 8px;
-            font-size: 14px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            opacity: 0;
-            animation: fadeInOut 4s ease-in-out forwards;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+            .vehicle-btn, .driver-btn {
+                padding: 10px 5px;
+                min-height: 50px;
+                font-size: 0.85rem;
+            }
 
-        .toast i {
-            font-size: 1.2em;
-        }
+            .vehicle-btn i, .driver-btn i {
+                font-size: 1.2rem;
+            }
 
-        .toast.success {
-            background-color: #4CAF50;
-        }
+            .content {
+                flex-direction: column;
+                gap: 8px;
+            }
 
-        .toast.error {
-            background-color: #f44336;
-        }
+            .form-section, .data-section {
+                padding: 10px;
+                min-width: 100%;
+            }
 
-        .toast.info {
-            background-color: #2196F3;
-        }
+            .section-title {
+                font-size: 1.3rem;
+            }
 
-        .toast.loading {
-            background-color: #ff9800;
-            animation: none;
-        }
+            .form-group input, .form-group select, .form-group textarea {
+                padding: 6px;
+                font-size: 0.85rem;
+            }
 
-        @keyframes fadeInOut {
-            0%, 100% { opacity: 0; }
-            10%, 90% { opacity: 1; }
+            .submit-btn {
+                padding: 8px;
+                font-size: 0.85rem;
+            }
+
+            /* Ajustes para mobile no histórico */
+            .trip-item {
+                padding: 8px 0;
+                border: 1px solid #e0e0e0;
+                border-radius: 6px;
+                margin-bottom: 8px;
+                background-color: #fff;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            }
+
+            .trip-header {
+                padding: 0 8px;
+            }
+
+            .trip-km, .trip-activities {
+                padding: 0 8px;
+                font-size: 0.85rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div id="toast-container"></div>
     <div class="container">
-        <header>
-            <h1><i class="fas fa-route"></i> Registro de Viagens</h1>
-            <div class="status-bar">
-                <span id="syncStatus" class="status-text">Pronto.</span>
-                <div class="status-buttons">
-                    <button id="cloudInfoBtn" title="Informações"><i class="fas fa-cloud"></i></button>
-                    <button id="helpBtn" title="Ajuda"><i class="fas fa-question-circle"></i></button>
-                    <button onclick="loadDataFromSheets()" title="Sincronizar dados"><i class="fas fa-sync-alt"></i></button>
-                </div>
-            </div>
-            <div id="loadingOverlay" class="loading-overlay">
-                <div class="loading-spinner"></div>
+        <header class="header">
+            <h1>Controle de Quilometragem</h1>
+            <p>Registro de Viagens e Atividades</p>
+            <div class="header-buttons">
+                <button class="header-btn" id="cloudInfoBtn"><i class="fas fa-info-circle"></i> Sobre o App</button>
+                <button class="header-btn" id="helpBtn"><i class="fas fa-question-circle"></i> Ajuda</button>
             </div>
         </header>
 
-        <section class="form-section">
-            <form id="tripForm">
-                <div class="form-group">
-                    <label>Motorista</label>
-                    <div class="btn-group">
-                        <button type="button" class="btn driver-btn" data-driver="Motorista 1">Motorista 1</button>
-                        <button type="button" class="btn driver-btn" data-driver="Motorista 2">Motorista 2</button>
+        <div id="loading" class="loading-container">
+            <div class="spinner"></div>
+            <p id="syncStatus">Sincronizando Dados...</p>
+        </div>
+
+        <div class="vehicle-km-cards" id="vehicleKmContainer">
+        </div>
+
+        <div class="content" id="appContent" style="display: none;">
+            <section class="form-section">
+                <h2 class="section-title">
+                    <i class="fas fa-plus-circle"></i> Adicionar Viagem
+                </h2>
+                
+                <div class="feature-highlight">
+                    <i class="fas fa-car"></i>
+                    <div>
+                        <strong>Sistema automatizado:</strong> Sugestões de km baseadas nas últimas viagens.
                     </div>
-                    <input type="text" id="driver" name="driver" required readonly>
                 </div>
                 
-                <div class="form-group">
-                    <label>Veículo</label>
-                    <div class="btn-group">
-                        <button type="button" class="btn vehicle-btn" data-vehicle="FIAT FIORINO">FIAT FIORINO</button>
-                        <button type="button" class="btn vehicle-btn" data-vehicle="FORD RANGER">FORD RANGER</button>
+                <form id="tripForm">
+                    <div class="form-group">
+                        <label>Selecione o Motorista:</label>
+                        <div class="driver-selection">
+                            <button type="button" class="driver-btn xumbrega" data-driver="Xumbrega">
+                                <i class="fas fa-user"></i>
+                                <span>Xumbrega</span>
+                            </button>
+                            <button type="button" class="driver-btn mumia" data-driver="Múmia">
+                                <i class="fas fa-user"></i>
+                                <span>Múmia</span>
+                            </button>
+                            <button type="button" class="driver-btn orientados" data-driver="Orientados">
+                                <i class="fas fa-user"></i>
+                                <span>Orientados</span>
+                            </button>
+                        </div>
+                        <input type="hidden" id="driver" name="driver" required>
                     </div>
-                    <input type="text" id="vehicle" name="vehicle" required readonly>
+                    
+                    <div class="form-group">
+                        <label>Selecione o Veículo:</label>
+                        <div class="vehicle-selection">
+                            <button type="button" class="vehicle-btn ford" data-vehicle="FORD RANGER">
+                                <i class="fas fa-truck-pickup"></i>
+                                <span>FORD RANGER</span>
+                            </button>
+                            <button type="button" class="vehicle-btn fiat" data-vehicle="FIAT STRADA">
+                                <i class="fas fa-car"></i>
+                                <span>FIAT STRADA</span>
+                            </button>
+                        </div>
+                        <input type="hidden" id="vehicle" name="vehicle" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="date">Data:</label>
+                        <input type="date" id="date" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="kmStart">Km Saída:</label>
+                        <input type="number" id="kmStart" required placeholder="Quilometragem inicial">
+                        <div id="kmSuggestion" class="suggestion" style="display: none;">
+                            <p>Última quilometragem: <strong id="lastKmValue">0</strong> km</p>
+                            <button type="button" class="suggestion-btn" id="useSuggestionBtn">Usar Sugestão</button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="kmEnd">Km Chegada:</label>
+                        <input type="number" id="kmEnd" required placeholder="Quilometragem final">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="activities">Atividades Desenvolvidas:</label>
+                        <textarea id="activities" required placeholder="Descreva as atividades realizadas"></textarea>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        <i class="fas fa-save"></i> Salvar Viagem
+                    </button>
+                </form>
+            </section>
+            
+            <section class="data-section">
+                <h2 class="section-title">
+                    <i class="fas fa-history"></i> Histórico de Viagens
+                </h2>
+                <div class="table-container">
+                    <div id="tripsList">
+                        <!-- As viagens serão renderizadas aqui -->
+                    </div>
                 </div>
-
-                <div class="form-group">
-                    <label for="date">Data</label>
-                    <input type="date" id="date" name="date" required>
+                <div class="no-data" id="noDataMessage">
+                    <i class="fas fa-info-circle"></i>
+                    <h3>Nenhuma viagem registrada ainda</h3>
+                    <p>Adicione sua primeira viagem usando o formulário ao lado</p>
                 </div>
-
-                <div class="form-group">
-                    <label for="kmStart">Km Saída</label>
-                    <input type="number" id="kmStart" name="kmStart" required>
-                </div>
-                
-                <div id="kmSuggestion" class="km-suggestion">
-                    <i class="fas fa-lightbulb"></i>
-                    <span>Último Km registrado: <strong id="lastKmValue"></strong></span>
-                    <button type="button" id="useSuggestionBtn">Usar</button>
-                </div>
-
-                <div class="form-group">
-                    <label for="kmEnd">Km Chegada</label>
-                    <input type="number" id="kmEnd" name="kmEnd" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="activities">Atividades</label>
-                    <textarea id="activities" name="activities" rows="3" required></textarea>
-                </div>
-
-                <button type="submit" id="submitBtn" class="submit-btn"><i class="fas fa-save"></i> Salvar Viagem</button>
-            </form>
-        </section>
-
-        <section id="km-stats-section">
-            <h2>Estatísticas do Mês</h2>
-            <div id="vehicleKmContainer" class="vehicle-km-container">
-                </div>
-        </section>
-
-        <section id="history-section">
-            <h2>Histórico Recente</h2>
-            <div id="tripsList">
-                </div>
-            <p id="noDataMessage">Nenhum registro de viagem encontrado. Adicione a primeira viagem acima!</p>
-        </section>
+            </section>
+        </div>
+        
+        <footer class="footer">
+            <p> MEIA APP | Sistema de Controle de Quilometragem e Atividades&copy; 2025 | Dados armazenados na núvem em tempo real</p>
+        </footer>
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbz8o-bQzB7qB2yQd3t5yG4z0w5G7oB9uG0l0y8/exec"; // Substitua pelo URL da sua API
-        const CACHE_KEY = "tripDataCache";
-        const CACHE_EXPIRATION = 5 * 60 * 1000; // 5 minutos
+        const API_URL = "https://script.google.com/macros/s/AKfycbxB2f8_0tOXUH7qimgZMTsXobvc4nvPdbqkSt5R_0lI-FzRAUTuiqgoAIkI0mRem7wjvA/exec";
 
+        // Variáveis globais
         let trips = [];
-        let vehicles = ["FIAT FIORINO", "FORD RANGER"];
-        let drivers = ["Motorista 1", "Motorista 2"];
-
-        let isSubmitting = false;
+        let drivers = ['Xumbrega', 'Múmia', 'Orientados'];
+        let activities = [];
+        let vehicles = ['FORD RANGER', 'FIAT STRADA'];
         let selectedVehicle = null;
         let selectedDriver = null;
-
-        const loadingElement = document.getElementById('loadingOverlay');
+        let isSubmitting = false; // Controle de envio
+        
+        // Elementos da interface
         const syncStatus = document.getElementById('syncStatus');
+        const loadingElement = document.getElementById('loading');
+        const vehicleKmContainer = document.getElementById('vehicleKmContainer');
+        const appContent = document.getElementById('appContent');
         const submitBtn = document.getElementById('submitBtn');
+        
+        // Cache de dados
+        const CACHE_KEY = 'kmControlCache';
+        const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos em milissegundos
 
-        // Função para exibir um balão de notificação
-        function showToast(message, type) {
-            const toastContainer = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            let icon = '';
-            if (type === 'success') {
-                icon = '<i class="fas fa-check-circle"></i>';
-            } else if (type === 'error') {
-                icon = '<i class="fas fa-exclamation-triangle"></i>';
-            } else if (type === 'info' || type === 'loading') {
-                icon = '<i class="fas fa-info-circle"></i>';
+        // Função para verificar e obter dados do cache
+        function getCachedData() {
+            const cached = localStorage.getItem(CACHE_KEY);
+            if (!cached) return null;
+            
+            const { data, timestamp } = JSON.parse(cached);
+            const now = new Date().getTime();
+            
+            // Verificar se o cache ainda é válido
+            if (now - timestamp < CACHE_DURATION) {
+                return data;
             }
-            toast.innerHTML = `${icon} <span>${message}</span>`;
-            toastContainer.appendChild(toast);
-
-            if (type !== 'loading') {
-                setTimeout(() => {
-                    toast.remove();
-                }, 4000); // Remove o balão após 4 segundos
-            }
+            
+            // Cache expirado
+            localStorage.removeItem(CACHE_KEY);
+            return null;
         }
 
+        // Função para salvar dados no cache
+        function saveToCache(data) {
+            const cacheData = {
+                data: data,
+                timestamp: new Date().getTime()
+            };
+            localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
+        }
+
+        // Função para carregar dados (com cache)
         async function loadDataFromSheets() {
             try {
-                loadingElement.style.display = 'flex';
-                showToast('Sincronizando dados...', 'loading');
-
-                const cachedData = localStorage.getItem(CACHE_KEY);
-                const cachedTimestamp = localStorage.getItem(`${CACHE_KEY}_timestamp`);
-
-                if (cachedData && cachedTimestamp && (Date.now() - cachedTimestamp < CACHE_EXPIRATION)) {
-                    const data = JSON.parse(cachedData);
-                    trips = data.trips;
-                    vehicles = data.vehicles;
-                    drivers = data.drivers;
-                } else {
-                    const response = await fetch(API_URL + "?action=getTrips");
-                    if (!response.ok) {
-                        throw new Error(`Erro HTTP: ${response.status} - ${response.statusText}`);
-                    }
-                    const result = await response.json();
-                    
-                    if (result.error) {
-                        throw new Error(result.error);
-                    }
-                    
-                    trips = result;
-                    vehicles = ["FIAT FIORINO", "FORD RANGER"]; // Hardcoded for this example
-                    drivers = ["Motorista 1", "Motorista 2"]; // Hardcoded for this example
-                    
-                    const dataToCache = { trips, vehicles, drivers };
-                    localStorage.setItem(CACHE_KEY, JSON.stringify(dataToCache));
-                    localStorage.setItem(`${CACHE_KEY}_timestamp`, Date.now());
+                syncStatus.textContent = "Carregando dados...";
+                
+                // Verificar se há dados em cache
+                const cachedData = getCachedData();
+                if (cachedData) {
+                    trips = cachedData;
+                    renderInterface();
+                    syncStatus.textContent = "Dados carregados do cache";
+                    setTimeout(() => {
+                        loadingElement.style.display = 'none';
+                        appContent.style.display = 'flex';
+                        vehicleKmContainer.style.display = 'grid';
+                    }, 500);
+                    return;
                 }
-
-                renderTrips();
-                renderVehicleKmCards();
-                showToast('Dados atualizados com sucesso!', 'success');
-            } catch (error) {
-                console.error("Erro na sincronização:", error);
-                showToast('Erro na sincronização: ' + error.message, 'error');
-            } finally {
+                
+                // Se não há cache, buscar da API
+                const response = await fetch(`${API_URL}?action=getTrips`);
+                if (!response.ok) {
+                    throw new Error(`Erro HTTP: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                trips = data;
+                saveToCache(data); // Salvar no cache
+                
+                const fetchedDrivers = [...new Set(trips.map(trip => trip.Motorista))];
+                drivers = ['Xumbrega', 'Múmia', 'Orientados', ...fetchedDrivers.filter(d => !['Xumbrega', 'Múmia', 'Orientados'].includes(d))];
+                activities = [...new Set(trips.map(trip => trip.Atividades))];
+                
+                const vehicleSet = new Set(vehicles);
+                trips.forEach(trip => vehicleSet.add(trip.Veículo));
+                vehicles = Array.from(vehicleSet);
+                
+                renderInterface();
+                
                 loadingElement.style.display = 'none';
-                syncStatus.textContent = "Última atualização: " + new Date().toLocaleTimeString();
+                appContent.style.display = 'flex';
+                vehicleKmContainer.style.display = 'grid';
+                
+            } catch (error) {
+                console.error("Erro ao carregar dados:", error);
+                syncStatus.textContent = "Erro ao carregar dados: " + error.message;
+                syncStatus.style.color = '#e74c3c';
+                
+                // Tentar usar cache mesmo com erro
+                const cachedData = getCachedData();
+                if (cachedData) {
+                    trips = cachedData;
+                    renderInterface();
+                    syncStatus.textContent = "Usando dados offline (última sincronização)";
+                    setTimeout(() => {
+                        loadingElement.style.display = 'none';
+                        appContent.style.display = 'flex';
+                        vehicleKmContainer.style.display = 'grid';
+                    }, 1000);
+                } else {
+                    setTimeout(() => {
+                        loadingElement.style.display = 'none';
+                        appContent.style.display = 'flex';
+                        vehicleKmContainer.style.display = 'grid';
+                    }, 2000);
+                }
             }
         }
+
+        // Função para renderizar a interface
+        function renderInterface() {
+            renderTrips();
+            renderVehicleKmCards();
+        }
         
+        // Função para adicionar viagem (com prevenção de duplo clique)
         async function addTripToSheets(newTrip) {
-            if (isSubmitting) return false;
+            if (isSubmitting) {
+                console.log("Tentativa de envio duplicado bloqueada");
+                return false;
+            }
+            
             isSubmitting = true;
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
             
             try {
-                showToast('Salvando viagem...', 'loading');
+                loadingElement.style.display = 'flex';
+                syncStatus.textContent = "Salvando viagem...";
+                
+                const formattedTrip = {
+                    driver: newTrip.driver,
+                    vehicle: newTrip.vehicle,
+                    date: newTrip.date,
+                    kmStart: parseInt(newTrip.kmStart, 10),
+                    kmEnd: parseInt(newTrip.kmEnd, 10),
+                    activities: newTrip.activities
+                };
+                
                 const formData = new URLSearchParams();
-                for (const key in newTrip) {
-                    formData.append(key, newTrip[key]);
-                }
                 formData.append('action', 'addTrip');
+                formData.append('driver', formattedTrip.driver);
+                formData.append('vehicle', formattedTrip.vehicle);
+                formData.append('date', formattedTrip.date);
+                formData.append('kmStart', formattedTrip.kmStart);
+                formData.append('kmEnd', formattedTrip.kmEnd);
+                formData.append('activities', formattedTrip.activities);
                 
                 const response = await fetch(API_URL, {
                     method: 'POST',
@@ -564,9 +956,9 @@
                 const result = await response.json();
                 
                 if (result.status === 'success') {
+                    // Invalidar cache para forçar recarregamento
                     localStorage.removeItem(CACHE_KEY);
                     await loadDataFromSheets();
-                    showToast('Viagem salva com sucesso!', 'success');
                     return true;
                 } else if (result.error) {
                     throw new Error(result.error);
@@ -575,7 +967,7 @@
                 }
             } catch (error) {
                 console.error("Erro detalhado ao salvar dados:", error);
-                showToast("Erro ao salvar a viagem: " + error.message, "error");
+                alert("Erro ao salvar a viagem: " + error.message);
                 return false;
             } finally {
                 isSubmitting = false;
@@ -590,7 +982,7 @@
             }
             try {
                 loadingElement.style.display = 'flex';
-                showToast("Excluindo registro...", "loading");
+                syncStatus.textContent = "Excluindo registro...";
                 
                 const response = await fetch(API_URL, {
                     method: 'POST',
@@ -601,62 +993,69 @@
                 });
                 
                 if (!response.ok) {
-                    throw new Error(`Erro HTTP: ${response.status} - ${response.statusText}`);
+                    throw new Error(`Erro HTTP: ${response.status}`);
                 }
                 
                 const result = await response.json();
-                
                 if (result.status === 'success') {
+                    // Invalidar cache para forçar recarregamento
                     localStorage.removeItem(CACHE_KEY);
                     await loadDataFromSheets();
-                    showToast('Registro excluído com sucesso!', 'success');
                 } else {
-                    throw new Error(result.error || "Erro desconhecido ao excluir o registro.");
+                    throw new Error(result.message);
                 }
             } catch (error) {
-                console.error("Erro ao excluir o registro:", error);
-                showToast("Erro ao excluir o registro: " + error.message, "error");
-            } finally {
+                console.error("Erro ao excluir dados:", error);
+                alert("Erro ao excluir o registro: " + error.message);
                 loadingElement.style.display = 'none';
             }
         }
         
+        function findLastKmEnd(vehicle, date) {
+            const vehicleTrips = trips.filter(trip => trip.Veículo === vehicle);
+            
+            if (vehicleTrips.length === 0) return null;
+            
+            const sortedTrips = [...vehicleTrips].sort((a, b) => {
+                return new Date(b.Data) - new Date(a.Data);
+            });
+            
+            return sortedTrips[0].KmChegada;
+        }
+
         function renderTrips() {
             const tripsList = document.getElementById('tripsList');
+            const noDataMessage = document.getElementById('noDataMessage');
             tripsList.innerHTML = '';
             
             if (!trips || trips.length === 0) {
-                document.getElementById('noDataMessage').style.display = 'block';
+                noDataMessage.style.display = 'block';
                 return;
             }
-            document.getElementById('noDataMessage').style.display = 'none';
             
-            const recentTrips = trips.slice(-10).reverse();
-
-            recentTrips.forEach((trip, originalIndex) => {
-                const tripElement = document.createElement('div');
-                tripElement.className = 'trip-item';
+            noDataMessage.style.display = 'none';
+            
+            const latestTrips = trips.slice(-10).reverse();
+            
+            latestTrips.forEach((trip, index) => {
+                const rowIndex = trips.length - 1 - index;
+                const distance = trip.KmChegada - trip.KmSaída;
                 
-                const kmTraveled = (trip.KmChegada || 0) - (trip.KmSaída || 0);
-
-                tripElement.innerHTML = `
+                const tripItem = document.createElement('div');
+                tripItem.className = 'trip-item';
+                tripItem.innerHTML = `
                     <div class="trip-header">
-                        <span class="trip-info">${trip.Motorista} - ${trip.Veículo}</span>
-                        <button class="delete-btn" onclick="deleteTripFromSheets(${trip.rowIndex})"><i class="fas fa-trash"></i></button>
+                        <div class="trip-info">${trip.Motorista} | ${trip.Veículo} | ${formatDate(trip.Data)}</div>
+                        <button class="delete-btn" onclick="deleteTripFromSheets(${rowIndex})"><i class="fas fa-trash-alt"></i></button>
                     </div>
-                    <div class="trip-km">
-                        Data: ${trip.Data} |
-                        Km: ${trip.KmSaída.toLocaleString()} - ${trip.KmChegada.toLocaleString()} (${kmTraveled.toLocaleString()} km)
-                    </div>
-                    <div class="trip-activities">
-                        Atividades: ${trip.Atividades}
-                    </div>
+                    <div class="trip-km">${trip.KmSaída.toLocaleString()} - ${trip.KmChegada.toLocaleString()} | ${distance.toLocaleString()} km</div>
+                    <div class="trip-activities">${trip.Atividades}</div>
                 `;
-                tripsList.appendChild(tripElement);
+                tripsList.appendChild(tripItem);
             });
         }
 
-        function renderVehicleKmCards() {
+       function renderVehicleKmCards() {
             const container = document.getElementById('vehicleKmContainer');
             container.innerHTML = '';
 
@@ -670,10 +1069,16 @@
                 if (!trip.Data) return false;
 
                 try {
-                    const parts = trip.Data.split('/');
+                    const parts = trip.Data.split('-');
                     if (parts.length !== 3) return false;
 
-                    const tripDate = new Date(Date.UTC(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0])));
+                    const year = parseInt(parts[0], 10);
+                    const month = parseInt(parts[1], 10) - 1; // Mês é de 0 a 11
+                    const day = parseInt(parts[2], 10);
+                    
+                    // CORREÇÃO AQUI
+                    const tripDate = new Date(Date.UTC(year, month, day));
+
                     return tripDate.getUTCMonth() === currentMonth && tripDate.getUTCFullYear() === currentYear;
                 } catch (e) {
                     console.error("Erro ao processar data:", trip.Data, e);
@@ -719,52 +1124,100 @@
             });
         }
         
-        function updateKmSuggestion() {
-            const vehicleInput = document.getElementById('vehicle').value;
-            const kmSuggestionElement = document.getElementById('kmSuggestion');
-            const lastKmValueElement = document.getElementById('lastKmValue');
+        function formatDate(dateString) {
+            if (!dateString) return 'Data inválida';
             
-            kmSuggestionElement.style.display = 'none';
-
-            if (vehicleInput) {
-                const lastTrip = trips
-                    .filter(t => t.Veículo === vehicleInput)
-                    .sort((a, b) => new Date(b.Timestamp) - new Date(a.Timestamp))[0];
-
-                if (lastTrip && lastTrip.KmChegada) {
-                    lastKmValueElement.textContent = lastTrip.KmChegada.toLocaleString();
-                    kmSuggestionElement.style.display = 'flex';
+            try {
+                const dateOnly = dateString.toString().split(' ')[0];
+                const parts = dateOnly.split('-');
+                
+                if (parts.length === 3) {
+                    const [year, month, day] = parts;
+                    return `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${year}`;
                 }
+                
+                const date = new Date(dateOnly);
+                if (!isNaN(date.getTime())) {
+                    const day = String(date.getDate()).padStart(2, '0');
+                    const month = String(date.getMonth() + 1).padStart(2, '0');
+                    const year = date.getFullYear();
+                    return `${day}/${month}/${year}`;
+                }
+                
+                return dateOnly;
+            } catch (e) {
+                console.error("Erro ao formatar data:", dateString, e);
+                return dateString;
+            }
+        }
+        
+        function setupVehicleSelection() {
+            const vehicleBtns = document.querySelectorAll('.vehicle-btn');
+            const vehicleInput = document.getElementById('vehicle');
+            
+            vehicleBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    vehicleBtns.forEach(b => b.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedVehicle = this.getAttribute('data-vehicle');
+                    vehicleInput.value = selectedVehicle;
+                    checkKmSuggestion();
+                });
+            });
+        }
+        
+        function setupDriverSelection() {
+            const driverBtns = document.querySelectorAll('.driver-btn');
+            const driverInput = document.getElementById('driver');
+            
+            driverBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    driverBtns.forEach(b => b.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedDriver = this.getAttribute('data-driver');
+                    driverInput.value = selectedDriver;
+                });
+            });
+        }
+        
+        function checkKmSuggestion() {
+            const dateInput = document.getElementById('date');
+            const selectedDate = dateInput.value;
+            
+            if (selectedVehicle && selectedDate) {
+                const lastKm = findLastKmEnd(selectedVehicle, selectedDate);
+                if (lastKm !== null) {
+                    document.getElementById('lastKmValue').textContent = lastKm;
+                    document.getElementById('kmSuggestion').style.display = 'flex';
+                } else {
+                    document.getElementById('kmSuggestion').style.display = 'none';
+                }
+            } else {
+                document.getElementById('kmSuggestion').style.display = 'none';
             }
         }
         
         document.addEventListener('DOMContentLoaded', () => {
+            const today = new Date();
+            const formattedDate = today.toISOString().split('T')[0];
+            document.getElementById('date').value = formattedDate;
+            
+            setupVehicleSelection();
+            setupDriverSelection();
+            
             loadDataFromSheets();
             
-            document.getElementById('vehicle').addEventListener('change', updateKmSuggestion);
+            const dateInput = document.getElementById('date');
+            const kmStartInput = document.getElementById('kmStart');
+            const useSuggestionBtn = document.getElementById('useSuggestionBtn');
             
-            document.getElementById('useSuggestionBtn').addEventListener('click', () => {
-                const lastKm = document.getElementById('lastKmValue').textContent;
-                document.getElementById('kmStart').value = lastKm.replace(/\D/g, '');
+            dateInput.addEventListener('change', checkKmSuggestion);
+            
+            useSuggestionBtn.addEventListener('click', () => {
+                kmStartInput.value = document.getElementById('lastKmValue').textContent;
+                document.getElementById('kmSuggestion').style.display = 'none';
             });
             
-            document.querySelectorAll('.driver-btn').forEach(button => {
-                button.addEventListener('click', () => {
-                    document.querySelectorAll('.driver-btn').forEach(btn => btn.classList.remove('selected'));
-                    button.classList.add('selected');
-                    document.getElementById('driver').value = button.dataset.driver;
-                });
-            });
-
-            document.querySelectorAll('.vehicle-btn').forEach(button => {
-                button.addEventListener('click', () => {
-                    document.querySelectorAll('.vehicle-btn').forEach(btn => btn.classList.remove('selected'));
-                    button.classList.add('selected');
-                    document.getElementById('vehicle').value = button.dataset.vehicle;
-                    updateKmSuggestion();
-                });
-            });
-
             document.getElementById('tripForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 
@@ -776,40 +1229,66 @@
                 const activities = document.getElementById('activities').value;
                 
                 if (!driver || !vehicle || !date || isNaN(kmStart) || isNaN(kmEnd) || !activities) {
-                    showToast('Por favor, preencha todos os campos!', 'error');
+                    alert('Por favor, preencha todos os campos!');
                     return;
                 }
                 
                 if (kmEnd < kmStart) {
-                    showToast('Km de chegada não pode ser menor que o Km de saída!', 'error');
+                    alert('Km de chegada não pode ser menor que o Km de saída!');
                     return;
                 }
                 
-                const newTrip = {
-                    driver: driver,
-                    vehicle: vehicle,
-                    date: date,
-                    kmStart: kmStart,
-                    kmEnd: kmEnd,
-                    activities: activities
+              const newTrip = {
+                driver: driver,
+                vehicle: vehicle,
+                date: date, // Esta é a data YYYY-MM-DD do formulário
+                kmStart: kmStart,
+                kmEnd: kmEnd,
+                activities: activities
                 };
                 
                 const success = await addTripToSheets(newTrip);
                 if (success) {
                     e.target.reset();
-                    document.querySelectorAll('.btn').forEach(btn => btn.classList.remove('selected'));
+                    document.getElementById('date').value = formattedDate;
+                    
+                    document.querySelectorAll('.vehicle-btn').forEach(btn => {
+                        btn.classList.remove('selected');
+                    });
+                    document.querySelectorAll('.driver-btn').forEach(btn => {
+                        btn.classList.remove('selected');
+                    });
+                    selectedVehicle = null;
+                    selectedDriver = null;
+                    document.getElementById('vehicle').value = '';
+                    document.getElementById('driver').value = '';
+                    
                     document.getElementById('kmSuggestion').style.display = 'none';
                 }
             });
             
             document.getElementById('cloudInfoBtn').addEventListener('click', () => {
-                showToast('Este sistema se conecta a uma planilha online em tempo real. O App já está pronto para o uso.', 'info');
+                alert('Este é um sistema que se conecta a uma planilha online em tempo real. O App já está pronto para o uso.');
             });
-
+            
             document.getElementById('helpBtn').addEventListener('click', () => {
-                showToast('Ajuda: Preencha o formulário para registrar uma nova viagem. A tabela ao final mostrará o histórico com atividades realizadas. Clique no ícone de lixeira para excluir DEFINITIVAMENTE um registro.', 'info');
+                alert('Ajuda: Preencha o formulário para registrar uma nova viagem. A tabela ao final mostrará o histórico com atividades realizadas. Clique no ícone de lixeira para excluir DEFINITIVAMENTE um registro.');
             });
         });
+
+        window.testAPI = async function() {
+            console.log("🧪 Testando conexão com a API...");
+            
+            try {
+                const response = await fetch(API_URL + "?action=getTrips");
+                const data = await response.json();
+                console.log("📊 Dados recebidos:", data);
+                alert("Conexão OK! Viagens encontradas: " + (data.length || 0));
+            } catch (error) {
+                console.error("❌ Erro no teste:", error);
+                alert("Erro na conexão: " + error.message);
+            }
+        }
     </script>
 </body>
 </html>
