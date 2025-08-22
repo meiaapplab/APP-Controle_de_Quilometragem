@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     
     <style>
+        /* Estilos anteriores mantidos */
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
 
         :root {
@@ -536,6 +537,34 @@
             opacity: 0.7;
         }
 
+        /* NOVOS ESTILOS PARA O HISTÓRICO DE VIAGENS */
+        .trip-item {
+            border-bottom: 1px solid #e0e0e0;
+            padding: 10px 0;
+        }
+
+        .trip-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .trip-info {
+            font-weight: 600;
+            flex-grow: 1;
+        }
+
+        .trip-km {
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        .trip-activities {
+            color: #666;
+            font-style: italic;
+        }
+
         @media (max-width: 1080px) {
             body {
                 font-size: 14px;
@@ -609,37 +638,23 @@
                 font-size: 0.85rem;
             }
 
-            #tripsTable {
-                border: none;
-                font-size: 0.8rem;
-            }
-
-            #tripsTable thead {
-                display: none;
-            }
-
-            #tripsTable tbody tr {
-                display: block;
-                margin-bottom: 8px;
+            /* Ajustes para mobile no histórico */
+            .trip-item {
+                padding: 8px 0;
                 border: 1px solid #e0e0e0;
                 border-radius: 6px;
-                padding: 8px;
+                margin-bottom: 8px;
                 background-color: #fff;
                 box-shadow: 0 2px 5px rgba(0,0,0,0.05);
             }
 
-            #tripsTable tbody td {
-                display: block;
-                padding: 2px 0;
-                border: none;
-                white-space: normal;
-                text-align: left;
-                font-size: 0.75rem;
+            .trip-header {
+                padding: 0 8px;
             }
 
-            #tripsTable tbody td:last-child {
-                text-align: right;
-                padding-top: 4px;
+            .trip-km, .trip-activities {
+                padding: 0 8px;
+                font-size: 0.85rem;
             }
         }
     </style>
@@ -746,10 +761,9 @@
                     <i class="fas fa-history"></i> Histórico de Viagens
                 </h2>
                 <div class="table-container">
-                    <table id="tripsTable">
-                        <tbody id="tripsBody">
-                        </tbody>
-                    </table>
+                    <div id="tripsList">
+                        <!-- As viagens serão renderizadas aqui -->
+                    </div>
                 </div>
                 <div class="no-data" id="noDataMessage">
                     <i class="fas fa-info-circle"></i>
@@ -962,7 +976,6 @@
             }
         }
         
-        // Restante do código permanece igual...
         async function deleteTripFromSheets(index) {
             if (!confirm("Tem certeza que deseja excluir este registro?")) {
                 return;
@@ -1011,9 +1024,9 @@
         }
 
         function renderTrips() {
-            const tripsBody = document.getElementById('tripsBody');
+            const tripsList = document.getElementById('tripsList');
             const noDataMessage = document.getElementById('noDataMessage');
-            tripsBody.innerHTML = '';
+            tripsList.innerHTML = '';
             
             if (!trips || trips.length === 0) {
                 noDataMessage.style.display = 'block';
@@ -1026,13 +1039,19 @@
             
             latestTrips.forEach((trip, index) => {
                 const rowIndex = trips.length - 1 - index;
-                const row = tripsBody.insertRow();
                 const distance = trip.KmChegada - trip.KmSaída;
                 
-                row.innerHTML = `
-                    <td colspan="6">${trip.Motorista} | ${trip.Veículo} | ${formatDate(trip.Data)} | Saída: ${trip.KmSaída.toLocaleString()} - Chegada: ${trip.KmChegada.toLocaleString()} | Percorrido: ${distance.toLocaleString()} km | Atividades: ${trip.Atividades}</td>
-                    <td><button class="delete-btn" onclick="deleteTripFromSheets(${rowIndex})"><i class="fas fa-trash-alt"></i></button></td>
+                const tripItem = document.createElement('div');
+                tripItem.className = 'trip-item';
+                tripItem.innerHTML = `
+                    <div class="trip-header">
+                        <div class="trip-info">${trip.Motorista} | ${trip.Veículo} | ${formatDate(trip.Data)}</div>
+                        <button class="delete-btn" onclick="deleteTripFromSheets(${rowIndex})"><i class="fas fa-trash-alt"></i></button>
+                    </div>
+                    <div class="trip-km">${trip.KmSaída.toLocaleString()} - ${trip.KmChegada.toLocaleString()} | ${distance.toLocaleString()} km</div>
+                    <div class="trip-activities">${trip.Atividades}</div>
                 `;
+                tripsList.appendChild(tripItem);
             });
         }
 
@@ -1267,5 +1286,3 @@
     </script>
 </body>
 </html>
-
-
