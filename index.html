@@ -1238,13 +1238,13 @@
                     return;
                 }
                 
-                const newTrip = {
-                    driver,
-                    vehicle,
-                    date,
-                    kmStart,
-                    kmEnd,
-                    activities
+              const newTrip = {
+                driver: driver,
+                vehicle: vehicle,
+                date: date, // Esta é a data YYYY-MM-DD do formulário
+                kmStart: kmStart,
+                kmEnd: kmEnd,
+                activities: activities
                 };
                 
                 const success = await addTripToSheets(newTrip);
@@ -1292,6 +1292,7 @@
     </script>
 </body>
 </html>
+
 
 
 
