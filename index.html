@@ -1067,12 +1067,13 @@
 
             const monthlyTrips = trips.filter(trip => {
                 if (!trip.Data) return false;
-                
+
                 try {
                     const parts = trip.Data.split('-');
                     if (parts.length !== 3) return false;
-                    
-                    const tripDate = new Date(parts[0], parts[1] - 1, parts[2]);
+
+                    // CORREÇÃO AQUI
+                    const tripDate = new Date(`${parts[0]}-${parts[1]}-${parts[2]}T00:00:00`);
                     return tripDate.getMonth() === currentMonth && tripDate.getFullYear() === currentYear;
                 } catch (e) {
                     console.error("Erro ao processar data:", trip.Data, e);
@@ -1080,6 +1081,43 @@
                 }
             });
 
+            const vehicleKm = {};
+            monthlyTrips.forEach(trip => {
+                if (trip.KmChegada && trip.KmSaída) {
+                    const distance = trip.KmChegada - trip.KmSaída;
+                    if (vehicleKm[trip.Veículo]) {
+                        vehicleKm[trip.Veículo] += distance;
+                    } else {
+                        vehicleKm[trip.Veículo] = distance;
+                    }
+                }
+            });
+
+            vehicles.forEach(vehicle => {
+                const card = document.createElement('div');
+                const vehicleClass = vehicle.toLowerCase().includes('ford') ? 'ford-bg' : 'fiat-bg';
+                const vehicleIcon = vehicle.toLowerCase().includes('ford') ? 'fas fa-truck-pickup' : 'fas fa-car';
+                const kmTotal = vehicleKm[vehicle] || 0;
+
+                card.className = `vehicle-card ${vehicleClass}`;
+                card.innerHTML = `
+                    <div class="vehicle-card-header">
+                        <i class="${vehicleIcon} ${vehicle.toLowerCase().includes('ford') ? 'ford-color' : 'fiat-color'}"></i>
+                        <h3>${vehicle}</h3>
+                    </div>
+                    <div class="vehicle-km ${vehicle.toLowerCase().includes('ford') ? 'ford-color' : 'fiat-color'}">
+                        ${kmTotal.toLocaleString()} km
+                    </div>
+                    <div class="vehicle-stats">
+                        <div class="stat-item">
+                            <span class="stat-item-value">${new Date().toLocaleString('pt-BR', { month: 'long' })} ${currentYear}</span>
+                            <span class="stat-item-label">Mês de Referência</span>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
             const vehicleKm = {};
             monthlyTrips.forEach(trip => {
                 if (trip.KmChegada && trip.KmSaída) {
@@ -1286,3 +1324,4 @@
     </script>
 </body>
 </html>
+
