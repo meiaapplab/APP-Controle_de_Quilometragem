@@ -18,9 +18,9 @@
             --text-color: #2d3436;
             --ford-blue: #143577;
             --fiat-red: #d11c1e;
-            --driver-xumbrega: #2ecc71; /* Verde para Xumbrega */
-            --driver-mumia: #e67e22; /* Laranja para Múmia */
-            --driver-orientados: #9b59b6; /* Roxo para Orientados */
+            --driver-xumbrega: #2ecc71;
+            --driver-mumia: #e67e22;
+            --driver-orientados: #9b59b6;
         }
 
         * {
@@ -259,7 +259,6 @@
             box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
         }
 
-        /* Estilos para seleção de veículo e motorista */
         .vehicle-selection, .driver-selection {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
@@ -965,7 +964,7 @@
             if (!vehicles || vehicles.length === 0) return;
 
             const now = new Date();
-            const currentMonth = now.getMonth();
+            const currentMonth = now.toLocaleString('pt-BR', { month: 'long' }); // Get full month name in Portuguese
             const currentYear = now.getFullYear();
 
             const monthlyTrips = trips.filter(trip => {
@@ -995,21 +994,11 @@
                 }
             });
 
-            const vehicleTrips = {};
-            monthlyTrips.forEach(trip => {
-                if (vehicleTrips[trip.Veículo]) {
-                    vehicleTrips[trip.Veículo]++;
-                } else {
-                    vehicleTrips[trip.Veículo] = 1;
-                }
-            });
-
             vehicles.forEach(vehicle => {
                 const card = document.createElement('div');
                 const vehicleClass = vehicle.toLowerCase().includes('ford') ? 'ford-bg' : 'fiat-bg';
                 const vehicleIcon = vehicle.toLowerCase().includes('ford') ? 'fas fa-truck-pickup' : 'fas fa-car';
                 const kmTotal = vehicleKm[vehicle] || 0;
-                const totalTrips = vehicleTrips[vehicle] || 0;
 
                 card.className = `vehicle-card ${vehicleClass}`;
                 card.innerHTML = `
@@ -1022,8 +1011,8 @@
                     </div>
                     <div class="vehicle-stats">
                         <div class="stat-item">
-                            <span class="stat-item-value">${totalTrips}</span>
-                            <span class="stat-item-label">Viagens</span>
+                            <span class="stat-item-value">${currentMonth} ${currentYear}</span>
+                            <span class="stat-item-label">Mês de Referência</span>
                         </div>
                     </div>
                 `;
