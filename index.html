@@ -18,6 +18,9 @@
             --text-color: #2d3436;
             --ford-blue: #143577;
             --fiat-red: #d11c1e;
+            --driver-xumbrega: #2ecc71; /* Verde para Xumbrega */
+            --driver-mumia: #e67e22; /* Laranja para Múmia */
+            --driver-orientados: #9b59b6; /* Roxo para Orientados */
         }
 
         * {
@@ -256,15 +259,15 @@
             box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
         }
 
-        /* NOVO: Estilos para os botões de seleção de veículo */
-        .vehicle-selection {
+        /* Estilos para seleção de veículo e motorista */
+        .vehicle-selection, .driver-selection {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
             gap: 8px;
             margin-bottom: 10px;
         }
 
-        .vehicle-btn {
+        .vehicle-btn, .driver-btn {
             padding: 12px 8px;
             border: 2px solid #ddd;
             border-radius: 8px;
@@ -280,7 +283,7 @@
             min-height: 60px;
         }
 
-        .vehicle-btn i {
+        .vehicle-btn i, .driver-btn i {
             font-size: 1.4rem;
             margin-bottom: 5px;
         }
@@ -295,7 +298,22 @@
             border-color: #f0d0d0;
         }
 
-        .vehicle-btn.selected {
+        .driver-btn.xumbrega {
+            color: var(--driver-xumbrega);
+            border-color: #d0e8d7;
+        }
+
+        .driver-btn.mumia {
+            color: var(--driver-mumia);
+            border-color: #f0d7c0;
+        }
+
+        .driver-btn.orientados {
+            color: var(--driver-orientados);
+            border-color: #e0d0e8;
+        }
+
+        .vehicle-btn.selected, .driver-btn.selected {
             border-width: 3px;
             transform: scale(1.02);
         }
@@ -308,6 +326,21 @@
         .vehicle-btn.fiat.selected {
             border-color: var(--fiat-red);
             background-color: #fbe8e8;
+        }
+
+        .driver-btn.xumbrega.selected {
+            border-color: var(--driver-xumbrega);
+            background-color: #e8f5e9;
+        }
+
+        .driver-btn.mumia.selected {
+            border-color: var(--driver-mumia);
+            background-color: #fef5e7;
+        }
+
+        .driver-btn.orientados.selected {
+            border-color: var(--driver-orientados);
+            background-color: #f5e8fa;
         }
 
         .datalist-container {
@@ -535,19 +568,18 @@
                 font-size: 1.4rem;
             }
 
-            /* Ajustes para botões de veículo em mobile */
-            .vehicle-selection {
+            .vehicle-selection, .driver-selection {
                 grid-template-columns: 1fr 1fr;
                 gap: 6px;
             }
 
-            .vehicle-btn {
+            .vehicle-btn, .driver-btn {
                 padding: 10px 5px;
                 min-height: 50px;
                 font-size: 0.85rem;
             }
 
-            .vehicle-btn i {
+            .vehicle-btn i, .driver-btn i {
                 font-size: 1.2rem;
             }
 
@@ -643,15 +675,27 @@
                 </div>
                 
                 <form id="tripForm">
-                    <div class="form-group datalist-container">
-                        <label for="driver">Quem dirige:</label>
-                        <input type="text" id="driver" required placeholder="Nome do motorista" autocomplete="off">
-                        <div class="datalist-suggestions" id="driverSuggestions"></div>
+                    <div class="form-group">
+                        <label>Selecione o Motorista:</label>
+                        <div class="driver-selection">
+                            <button type="button" class="driver-btn xumbrega" data-driver="Xumbrega">
+                                <i class="fas fa-user"></i>
+                                <span>Xumbrega</span>
+                            </button>
+                            <button type="button" class="driver-btn mumia" data-driver="Múmia">
+                                <i class="fas fa-user"></i>
+                                <span>Múmia</span>
+                            </button>
+                            <button type="button" class="driver-btn orientados" data-driver="Orientados">
+                                <i class="fas fa-user"></i>
+                                <span>Orientados</span>
+                            </button>
+                        </div>
+                        <input type="hidden" id="driver" name="driver" required>
                     </div>
                     
                     <div class="form-group">
                         <label>Selecione o Veículo:</label>
-                        <!-- NOVO: Botões de seleção de veículo -->
                         <div class="vehicle-selection">
                             <button type="button" class="vehicle-btn ford" data-vehicle="FORD RANGER">
                                 <i class="fas fa-truck-pickup"></i>
@@ -662,7 +706,6 @@
                                 <span>FIAT STRADA</span>
                             </button>
                         </div>
-                        <!-- Campo hidden para armazenar o valor selecionado -->
                         <input type="hidden" id="vehicle" name="vehicle" required>
                     </div>
                     
@@ -711,7 +754,7 @@
                                 <th>Km Chegada</th>
                                 <th>Distância</th>
                                 <th>Atividades</th>
-                                <th></th> <!-- Coluna para o ícone de exclusão -->
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody id="tripsBody">
@@ -735,7 +778,7 @@
         const API_URL = "https://script.google.com/macros/s/AKfycbwcHR4-F02ctkgC4gOsRQI01enVDm0HwghSq5yB7gkOqZg1AZVrEP7FFBTeJ8wECExqcA/exec";
 
         let trips = [];
-        let drivers = [];
+        let drivers = ['Xumbrega', 'Múmia', 'Orientados'];
         let activities = [];
         let vehicles = ['FORD RANGER', 'FIAT STRADA'];
         
@@ -744,8 +787,8 @@
         const vehicleKmContainer = document.getElementById('vehicleKmContainer');
         const appContent = document.getElementById('appContent');
         
-        // NOVO: Variável para controlar o veículo selecionado
         let selectedVehicle = null;
+        let selectedDriver = null;
         
         async function loadDataFromSheets() {
             try {
@@ -764,14 +807,14 @@
                 
                 trips = data;
                 
-                drivers = [...new Set(trips.map(trip => trip.Motorista))];
+                const fetchedDrivers = [...new Set(trips.map(trip => trip.Motorista))];
+                drivers = ['Xumbrega', 'Múmia', 'Orientados', ...fetchedDrivers.filter(d => !['Xumbrega', 'Múmia', 'Orientados'].includes(d))];
                 activities = [...new Set(trips.map(trip => trip.Atividades))];
                 
                 const vehicleSet = new Set(vehicles);
                 trips.forEach(trip => vehicleSet.add(trip.Veículo));
                 vehicles = Array.from(vehicleSet);
                 
-                updateDriverSuggestions();
                 renderTrips();
                 renderVehicleKmCards();
                 
@@ -988,41 +1031,6 @@
             });
         }
         
-        function updateDriverSuggestions() {
-            const driverInput = document.getElementById('driver');
-            const driverSuggestions = document.getElementById('driverSuggestions');
-            
-            driverInput.addEventListener('input', function() {
-                const query = this.value.toLowerCase();
-                const filteredDrivers = drivers.filter(driver => 
-                    driver && driver.toLowerCase().includes(query));
-                
-                driverSuggestions.innerHTML = '';
-                
-                if (query.length > 0 && filteredDrivers.length > 0) {
-                    filteredDrivers.forEach(driver => {
-                        const div = document.createElement('div');
-                        div.className = 'datalist-item';
-                        div.textContent = driver;
-                        div.addEventListener('click', () => {
-                            driverInput.value = driver;
-                            driverSuggestions.style.display = 'none';
-                        });
-                        driverSuggestions.appendChild(div);
-                    });
-                    driverSuggestions.style.display = 'block';
-                } else {
-                    driverSuggestions.style.display = 'none';
-                }
-            });
-            
-            document.addEventListener('click', (e) => {
-                if (!driverSuggestions.contains(e.target) && e.target !== driverInput) {
-                    driverSuggestions.style.display = 'none';
-                }
-            });
-        }
-        
         function formatDate(dateString) {
             if (!dateString) return 'Data inválida';
             
@@ -1050,30 +1058,35 @@
             }
         }
         
-        // NOVO: Função para lidar com a seleção de veículo
         function setupVehicleSelection() {
             const vehicleBtns = document.querySelectorAll('.vehicle-btn');
             const vehicleInput = document.getElementById('vehicle');
             
             vehicleBtns.forEach(btn => {
                 btn.addEventListener('click', function() {
-                    // Remove a seleção anterior
                     vehicleBtns.forEach(b => b.classList.remove('selected'));
-                    
-                    // Adiciona a seleção ao botão clicado
                     this.classList.add('selected');
-                    
-                    // Atualiza o valor do campo hidden
                     selectedVehicle = this.getAttribute('data-vehicle');
                     vehicleInput.value = selectedVehicle;
-                    
-                    // Atualiza a sugestão de KM
                     checkKmSuggestion();
                 });
             });
         }
         
-        // NOVO: Atualizada para usar o selectedVehicle
+        function setupDriverSelection() {
+            const driverBtns = document.querySelectorAll('.driver-btn');
+            const driverInput = document.getElementById('driver');
+            
+            driverBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    driverBtns.forEach(b => b.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedDriver = this.getAttribute('data-driver');
+                    driverInput.value = selectedDriver;
+                });
+            });
+        }
+        
         function checkKmSuggestion() {
             const dateInput = document.getElementById('date');
             const selectedDate = dateInput.value;
@@ -1096,8 +1109,8 @@
             const formattedDate = today.toISOString().split('T')[0];
             document.getElementById('date').value = formattedDate;
             
-            // NOVO: Configura os botões de seleção de veículo
             setupVehicleSelection();
+            setupDriverSelection();
             
             loadDataFromSheets();
             
@@ -1105,7 +1118,6 @@
             const kmStartInput = document.getElementById('kmStart');
             const useSuggestionBtn = document.getElementById('useSuggestionBtn');
             
-            // NOVO: Atualizada para não depender do select
             dateInput.addEventListener('change', checkKmSuggestion);
             
             useSuggestionBtn.addEventListener('click', () => {
@@ -1117,13 +1129,12 @@
                 e.preventDefault();
                 
                 const driver = document.getElementById('driver').value;
-                const vehicle = document.getElementById('vehicle').value; // Agora vem do hidden field
+                const vehicle = document.getElementById('vehicle').value;
                 const date = document.getElementById('date').value;
                 const kmStart = parseInt(document.getElementById('kmStart').value, 10);
                 const kmEnd = parseInt(document.getElementById('kmEnd').value, 10);
                 const activities = document.getElementById('activities').value;
                 
-                // Validações
                 if (!driver || !vehicle || !date || isNaN(kmStart) || isNaN(kmEnd) || !activities) {
                     alert('Por favor, preencha todos os campos!');
                     return;
@@ -1148,12 +1159,16 @@
                     e.target.reset();
                     document.getElementById('date').value = formattedDate;
                     
-                    // NOVO: Limpa a seleção de veículo
                     document.querySelectorAll('.vehicle-btn').forEach(btn => {
                         btn.classList.remove('selected');
                     });
+                    document.querySelectorAll('.driver-btn').forEach(btn => {
+                        btn.classList.remove('selected');
+                    });
                     selectedVehicle = null;
+                    selectedDriver = null;
                     document.getElementById('vehicle').value = '';
+                    document.getElementById('driver').value = '';
                     
                     document.getElementById('kmSuggestion').style.display = 'none';
                 }
