@@ -500,7 +500,9 @@
 
                 if (cachedData && cachedTimestamp && (Date.now() - cachedTimestamp < CACHE_EXPIRATION)) {
                     const data = JSON.parse(cachedData);
-                    trips = data;
+                    trips = data.trips;
+                    vehicles = data.vehicles;
+                    drivers = data.drivers;
                 } else {
                     const response = await fetch(API_URL + "?action=getTrips");
                     if (!response.ok) {
@@ -513,7 +515,11 @@
                     }
                     
                     trips = result;
-                    localStorage.setItem(CACHE_KEY, JSON.stringify(trips));
+                    vehicles = ["FIAT FIORINO", "FORD RANGER"]; // Hardcoded for this example
+                    drivers = ["Motorista 1", "Motorista 2"]; // Hardcoded for this example
+                    
+                    const dataToCache = { trips, vehicles, drivers };
+                    localStorage.setItem(CACHE_KEY, JSON.stringify(dataToCache));
                     localStorage.setItem(`${CACHE_KEY}_timestamp`, Date.now());
                 }
 
@@ -536,6 +542,7 @@
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
             
             try {
+                showToast('Salvando viagem...', 'loading');
                 const formData = new URLSearchParams();
                 for (const key in newTrip) {
                     formData.append(key, newTrip[key]);
@@ -618,13 +625,12 @@
             const tripsList = document.getElementById('tripsList');
             tripsList.innerHTML = '';
             
-            if (trips.length === 0) {
+            if (!trips || trips.length === 0) {
                 document.getElementById('noDataMessage').style.display = 'block';
                 return;
             }
             document.getElementById('noDataMessage').style.display = 'none';
             
-            // Renderiza apenas os 10 mais recentes
             const recentTrips = trips.slice(-10).reverse();
 
             recentTrips.forEach((trip, originalIndex) => {
@@ -653,6 +659,8 @@
         function renderVehicleKmCards() {
             const container = document.getElementById('vehicleKmContainer');
             container.innerHTML = '';
+
+            if (!vehicles || vehicles.length === 0) return;
 
             const now = new Date();
             const currentMonth = now.getMonth();
@@ -713,17 +721,15 @@
         
         function updateKmSuggestion() {
             const vehicleInput = document.getElementById('vehicle').value;
-            const dateInput = document.getElementById('date').value;
             const kmSuggestionElement = document.getElementById('kmSuggestion');
             const lastKmValueElement = document.getElementById('lastKmValue');
             
             kmSuggestionElement.style.display = 'none';
 
-            if (vehicleInput && dateInput) {
-                // Encontra a última viagem para o veículo selecionado
+            if (vehicleInput) {
                 const lastTrip = trips
-                    .filter(t => t.Veículo === vehicleInput && t.Data <= dateInput)
-                    .sort((a, b) => new Date(b.Data) - new Date(a.Data))[0];
+                    .filter(t => t.Veículo === vehicleInput)
+                    .sort((a, b) => new Date(b.Timestamp) - new Date(a.Timestamp))[0];
 
                 if (lastTrip && lastTrip.KmChegada) {
                     lastKmValueElement.textContent = lastTrip.KmChegada.toLocaleString();
@@ -735,17 +741,13 @@
         document.addEventListener('DOMContentLoaded', () => {
             loadDataFromSheets();
             
-            // Adiciona evento para o Km Saída e data
             document.getElementById('vehicle').addEventListener('change', updateKmSuggestion);
-            document.getElementById('date').addEventListener('change', updateKmSuggestion);
             
-            // Evento para usar a sugestão de Km
             document.getElementById('useSuggestionBtn').addEventListener('click', () => {
                 const lastKm = document.getElementById('lastKmValue').textContent;
                 document.getElementById('kmStart').value = lastKm.replace(/\D/g, '');
             });
             
-            // Eventos para os botões de seleção
             document.querySelectorAll('.driver-btn').forEach(button => {
                 button.addEventListener('click', () => {
                     document.querySelectorAll('.driver-btn').forEach(btn => btn.classList.remove('selected'));
@@ -763,7 +765,6 @@
                 });
             });
 
-            // Lidar com o envio do formulário
             document.getElementById('tripForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 
