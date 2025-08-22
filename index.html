@@ -413,15 +413,18 @@
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.2s ease;
             margin-top: 8px;
+            position: relative;
         }
 
-        .submit-btn:hover {
+        .submit-btn:hover:not(:disabled) {
             background-color: #2980b9;
             transform: translateY(-2px);
         }
 
-        .submit-btn i {
-            margin-right: 6px;
+        .submit-btn:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+            opacity: 0.7;
         }
 
         .feature-highlight {
@@ -732,7 +735,7 @@
                         <textarea id="activities" required placeholder="Descreva as atividades realizadas"></textarea>
                     </div>
                     
-                    <button type="submit" class="submit-btn">
+                    <button type="submit" class="submit-btn" id="submitBtn">
                         <i class="fas fa-save"></i> Salvar Viagem
                     </button>
                 </form>
@@ -776,23 +779,73 @@
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbwcHR4-F02ctkgC4gOsRQI01enVDm0HwghSq5yB7gkOqZg1AZVrEP7FFBTeJ8wECExqcA/exec";
 
+        // Variáveis globais
         let trips = [];
         let drivers = ['Xumbrega', 'Múmia', 'Orientados'];
         let activities = [];
         let vehicles = ['FORD RANGER', 'FIAT STRADA'];
+        let selectedVehicle = null;
+        let selectedDriver = null;
+        let isSubmitting = false; // Controle de envio
         
+        // Elementos da interface
         const syncStatus = document.getElementById('syncStatus');
         const loadingElement = document.getElementById('loading');
         const vehicleKmContainer = document.getElementById('vehicleKmContainer');
         const appContent = document.getElementById('appContent');
+        const submitBtn = document.getElementById('submitBtn');
         
-        let selectedVehicle = null;
-        let selectedDriver = null;
-        
+        // Cache de dados
+        const CACHE_KEY = 'kmControlCache';
+        const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos em milissegundos
+
+        // Função para verificar e obter dados do cache
+        function getCachedData() {
+            const cached = localStorage.getItem(CACHE_KEY);
+            if (!cached) return null;
+            
+            const { data, timestamp } = JSON.parse(cached);
+            const now = new Date().getTime();
+            
+            // Verificar se o cache ainda é válido
+            if (now - timestamp < CACHE_DURATION) {
+                return data;
+            }
+            
+            // Cache expirado
+            localStorage.removeItem(CACHE_KEY);
+            return null;
+        }
+
+        // Função para salvar dados no cache
+        function saveToCache(data) {
+            const cacheData = {
+                data: data,
+                timestamp: new Date().getTime()
+            };
+            localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
+        }
+
+        // Função para carregar dados (com cache)
         async function loadDataFromSheets() {
             try {
                 syncStatus.textContent = "Carregando dados...";
                 
+                // Verificar se há dados em cache
+                const cachedData = getCachedData();
+                if (cachedData) {
+                    trips = cachedData;
+                    renderInterface();
+                    syncStatus.textContent = "Dados carregados do cache";
+                    setTimeout(() => {
+                        loadingElement.style.display = 'none';
+                        appContent.style.display = 'flex';
+                        vehicleKmContainer.style.display = 'grid';
+                    }, 500);
+                    return;
+                }
+                
+                // Se não há cache, buscar da API
                 const response = await fetch(`${API_URL}?action=getTrips`);
                 if (!response.ok) {
                     throw new Error(`Erro HTTP: ${response.status}`);
@@ -805,6 +858,7 @@
                 }
                 
                 trips = data;
+                saveToCache(data); // Salvar no cache
                 
                 const fetchedDrivers = [...new Set(trips.map(trip => trip.Motorista))];
                 drivers = ['Xumbrega', 'Múmia', 'Orientados', ...fetchedDrivers.filter(d => !['Xumbrega', 'Múmia', 'Orientados'].includes(d))];
@@ -814,26 +868,55 @@
                 trips.forEach(trip => vehicleSet.add(trip.Veículo));
                 vehicles = Array.from(vehicleSet);
                 
-                renderTrips();
-                renderVehicleKmCards();
+                renderInterface();
                 
                 loadingElement.style.display = 'none';
                 appContent.style.display = 'flex';
                 vehicleKmContainer.style.display = 'grid';
+                
             } catch (error) {
                 console.error("Erro ao carregar dados:", error);
                 syncStatus.textContent = "Erro ao carregar dados: " + error.message;
                 syncStatus.style.color = '#e74c3c';
                 
-                setTimeout(() => {
-                    loadingElement.style.display = 'none';
-                    appContent.style.display = 'flex';
-                    vehicleKmContainer.style.display = 'grid';
-                }, 2000);
+                // Tentar usar cache mesmo com erro
+                const cachedData = getCachedData();
+                if (cachedData) {
+                    trips = cachedData;
+                    renderInterface();
+                    syncStatus.textContent = "Usando dados offline (última sincronização)";
+                    setTimeout(() => {
+                        loadingElement.style.display = 'none';
+                        appContent.style.display = 'flex';
+                        vehicleKmContainer.style.display = 'grid';
+                    }, 1000);
+                } else {
+                    setTimeout(() => {
+                        loadingElement.style.display = 'none';
+                        appContent.style.display = 'flex';
+                        vehicleKmContainer.style.display = 'grid';
+                    }, 2000);
+                }
             }
         }
+
+        // Função para renderizar a interface
+        function renderInterface() {
+            renderTrips();
+            renderVehicleKmCards();
+        }
         
+        // Função para adicionar viagem (com prevenção de duplo clique)
         async function addTripToSheets(newTrip) {
+            if (isSubmitting) {
+                console.log("Tentativa de envio duplicado bloqueada");
+                return false;
+            }
+            
+            isSubmitting = true;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
+            
             try {
                 loadingElement.style.display = 'flex';
                 syncStatus.textContent = "Salvando viagem...";
@@ -871,6 +954,8 @@
                 const result = await response.json();
                 
                 if (result.status === 'success') {
+                    // Invalidar cache para forçar recarregamento
+                    localStorage.removeItem(CACHE_KEY);
                     await loadDataFromSheets();
                     return true;
                 } else if (result.error) {
@@ -881,11 +966,15 @@
             } catch (error) {
                 console.error("Erro detalhado ao salvar dados:", error);
                 alert("Erro ao salvar a viagem: " + error.message);
-                loadingElement.style.display = 'none';
                 return false;
+            } finally {
+                isSubmitting = false;
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-save"></i> Salvar Viagem';
             }
         }
         
+        // Restante do código permanece igual...
         async function deleteTripFromSheets(index) {
             if (!confirm("Tem certeza que deseja excluir este registro?")) {
                 return;
@@ -908,6 +997,8 @@
                 
                 const result = await response.json();
                 if (result.status === 'success') {
+                    // Invalidar cache para forçar recarregamento
+                    localStorage.removeItem(CACHE_KEY);
                     await loadDataFromSheets();
                 } else {
                     throw new Error(result.message);
@@ -964,7 +1055,7 @@
             if (!vehicles || vehicles.length === 0) return;
 
             const now = new Date();
-            const currentMonth = now.toLocaleString('pt-BR', { month: 'long' }); // Get full month name in Portuguese
+            const currentMonth = now.getMonth();
             const currentYear = now.getFullYear();
 
             const monthlyTrips = trips.filter(trip => {
@@ -1011,7 +1102,7 @@
                     </div>
                     <div class="vehicle-stats">
                         <div class="stat-item">
-                            <span class="stat-item-value">${currentMonth} ${currentYear}</span>
+                            <span class="stat-item-value">${new Date().toLocaleString('pt-BR', { month: 'long' })} ${currentYear}</span>
                             <span class="stat-item-label">Mês de Referência</span>
                         </div>
                     </div>
